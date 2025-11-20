@@ -1,6 +1,12 @@
 import { Colors } from "@/constants/colors";
 import React from "react";
-import { StyleSheet, TextInput, TextStyle, View } from "react-native";
+import {
+  BlurEvent,
+  StyleSheet,
+  TextInput,
+  TextStyle,
+  View,
+} from "react-native";
 import CText from "../c-text";
 
 interface Props {
@@ -9,6 +15,10 @@ interface Props {
   required?: boolean;
   labelStyle?: TextStyle;
   inputStyle?: TextStyle;
+  onChangeText?: (value: string) => void;
+  onBlur?: (e: BlurEvent) => void;
+  value?: string;
+  error?: string;
 }
 
 const CInput = ({
@@ -17,11 +27,22 @@ const CInput = ({
   required,
   inputStyle,
   labelStyle,
+  onChangeText,
+  onBlur,
+  value,
+  error,
 }: Props) => {
   return (
     <View>
       <CText style={[styles.label, labelStyle]}>{label}</CText>
-      <TextInput style={[styles.input, inputStyle]} placeholder={placeholder} />
+      <TextInput
+        style={[styles.input, inputStyle]}
+        placeholder={placeholder}
+        onChangeText={onChangeText}
+        onBlur={onBlur}
+        value={value}
+      />
+      {error && <CText style={styles.error}>{error}</CText>}
     </View>
   );
 };
@@ -37,5 +58,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     fontFamily: "StackSans-Regular",
+  },
+  error: {
+    color: Colors.red,
+    paddingVertical: 10,
+    fontSize: 13,
   },
 });
