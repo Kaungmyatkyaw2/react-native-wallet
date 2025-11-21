@@ -12,6 +12,13 @@ export const Colors = {
   textWhite: "#f3f3f3d3",
 
   white: "#ffffff",
+
+  muteBg: "#dee0e0ff",
+
+  red: "#DC2626",
+  green: "#059669",
+  yellow: "#D97706",
+  blue: "#2563EB",
 };
 
 export type ColorType = keyof typeof Colors;

@@ -21,6 +21,7 @@
     "@react-navigation/native": "^7.1.8",
     "@rneui/themed": "^4.0.0-rc.8",
     "@supabase/supabase-js": "^2.83.0",
+    "@tanstack/react-query": "^5.90.10",
     "better-auth": "^1.3.34",
     "expo": "~54.0.25",
     "expo-constants": "~18.0.10",

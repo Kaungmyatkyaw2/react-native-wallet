@@ -11,3 +11,21 @@ export const getGreetingText = () => {
 
   return "Good night!";
 };
+
+export const formatDate = (date: Date | string) => {
+  if (date instanceof Date) {
+    return date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
+  return "";
+};
+
+export const formatAmount = (amount: number = 0, currency: string = "") => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+  }).format(amount);
+};

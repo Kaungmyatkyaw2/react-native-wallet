@@ -23,7 +23,7 @@ const RegisterScreen = () => {
       setIsLoading(true);
       const { email, name, password } = formData;
 
-      const { error } = await supabase.auth.signUp({
+      const registerResponse = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -31,9 +31,19 @@ const RegisterScreen = () => {
         },
       });
 
-      if (error) {
-        Toast.show({ type: "error", text1: error.code, text2: error.message });
-        return;
+      if (registerResponse.error) {
+        throw new Error(registerResponse.error.message);
+      }
+
+      const createWalletResponse = await supabase.from("wallets").insert([
+        {
+          amount: 0,
+          user_id: registerResponse.data.user?.id,
+        },
+      ]);
+
+      if (createWalletResponse.error) {
+        throw new Error(createWalletResponse.error.message);
       }
 
       Toast.show({
@@ -44,6 +54,10 @@ const RegisterScreen = () => {
       router.push("/");
     } catch (error) {
       console.error("Error while registering: ", error);
+      Toast.show({
+        type: "error",
+        text1: (error as Error).message || "Failed to register the account",
+      });
     } finally {
       setIsLoading(false);
     }

@@ -1,0 +1,134 @@
+import { Colors } from "@/constants/colors";
+import { formatAmount } from "@/lib/utils";
+import { getMyWallet } from "@/services/wallet.services";
+import { useQuery } from "@tanstack/react-query";
+import { History, Inbox, ShoppingBag } from "lucide-react-native";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import CText from "../shared/c-text";
+
+const BalanceCard = () => {
+  const { isLoading, isError, error, data } = useQuery({
+    queryKey: ["my-wallet"],
+    queryFn: () => getMyWallet(),
+  });
+
+  return (
+    <View style={styles.balanceCard}>
+      <View style={styles.amountCard}>
+        <CText style={styles.balanceHeader}>Your available balance</CText>
+
+        {isLoading ? (
+          <View style={styles.skeletonContainer}>
+            <View style={[styles.skeletonLine, styles.skeletonBalance]} />
+          </View>
+        ) : isError ? (
+          <CText style={styles.errText}>{error?.message}</CText>
+        ) : (
+          <CText style={styles.balanceText}>
+            {formatAmount(data?.amount, data?.currency)}
+          </CText>
+        )}
+      </View>
+
+      <View style={styles.quickLinkCard}>
+        <View style={styles.quickLink}>
+          <Inbox color={Colors.bg} size={20} />
+          <CText style={styles.quickLinkText}>Income</CText>
+        </View>
+        <View style={styles.quickLink}>
+          <ShoppingBag color={Colors.bg} size={20} />
+          <CText style={styles.quickLinkText}>Expense</CText>
+        </View>
+        <View style={styles.quickLink}>
+          <History color={Colors.bg} size={20} />
+          <CText style={styles.quickLinkText}>History</CText>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default BalanceCard;
+
+const styles = StyleSheet.create({
+  balanceCard: {
+    borderTopLeftRadius: 10,
+    borderTopEndRadius: 10,
+    backgroundColor: Colors.primaryDark,
+    borderBottomLeftRadius: 5,
+    borderBottomEndRadius: 5,
+    marginBottom: 40,
+  },
+
+  amountCard: {
+    paddingHorizontal: 20,
+    paddingVertical: 35,
+    borderRadius: 10,
+    backgroundColor: Colors.primary,
+  },
+
+  balanceHeader: {
+    color: Colors.textWhite,
+    textAlign: "center",
+    fontSize: 13,
+  },
+
+  balanceText: {
+    color: Colors.white,
+    fontFamily: "StackSans-Bold",
+    fontSize: 30,
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  errText: {
+    color: Colors.red,
+    fontFamily: "StackSans-Bold",
+    fontSize: 20,
+    textAlign: "center",
+    marginVertical: 10,
+  },
+
+  // Skeleton styles
+  skeletonContainer: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+
+  skeletonLine: {
+    backgroundColor: Colors.textWhite,
+    borderRadius: 4,
+  },
+
+  skeletonBalance: {
+    height: 36, // Similar height to your balance text
+    width: 200, // Approximate width for the balance amount
+    opacity: 0.3,
+  },
+
+  quickLinkCard: {
+    paddingHorizontal: 10,
+    paddingVertical: 35,
+    backgroundColor: Colors.primaryDark,
+    borderBottomLeftRadius: 5,
+    borderBottomEndRadius: 5,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  quickLink: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "33%",
+  },
+
+  quickLinkText: {
+    color: Colors.textWhite,
+    marginTop: 3,
+    fontSize: 12,
+  },
+});

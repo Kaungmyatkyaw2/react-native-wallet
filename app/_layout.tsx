@@ -1,10 +1,13 @@
 import { AuthProvider } from "@/contexts/auth.context";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -29,14 +32,16 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack>
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack>
 
-      <Toast topOffset={60} />
-    </AuthProvider>
+        <Toast topOffset={60} />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
