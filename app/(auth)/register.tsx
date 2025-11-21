@@ -23,11 +23,11 @@ const RegisterScreen = () => {
       setIsLoading(true);
       const { email, name, password } = formData;
 
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { displayName: name },
+          data: { display_name: name },
         },
       });
 

@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/contexts/auth.context";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -15,6 +16,8 @@ export default function RootLayout() {
     "StackSans-SemiBold": require("../assets/fonts/StackSansText-SemiBold.ttf"),
   });
 
+  // Use useAuth instead of useSession
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
@@ -26,12 +29,14 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <AuthProvider>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       </Stack>
 
       <Toast topOffset={60} />
-    </>
+    </AuthProvider>
   );
 }
