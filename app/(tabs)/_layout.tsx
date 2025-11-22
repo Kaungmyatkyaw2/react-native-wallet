@@ -1,11 +1,12 @@
 import { Colors } from "@/constants/colors";
 import { useAuth } from "@/contexts/auth.context";
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 import {
   History,
   Home,
   LucideIcon,
   PieChart,
+  PlusIcon,
   Settings,
 } from "lucide-react-native";
 import React from "react";
@@ -31,6 +32,7 @@ const CustomTab = ({
 
 const _layout = () => {
   const { isLoading, session } = useAuth();
+  const pathname = usePathname();
 
   if (isLoading) {
     return (
@@ -57,6 +59,7 @@ const _layout = () => {
           borderTopWidth: 0.5,
           borderTopColor: Colors.mute,
           paddingTop: 20,
+          display: pathname.includes("create") ? "none" : "flex",
         },
       }}
     >
@@ -80,6 +83,19 @@ const _layout = () => {
             headerShown: false,
             tabBarIcon: ({ focused }) => (
               <CustomTab focused={focused} icon={PieChart} />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="create"
+          options={{
+            title: "Create",
+            headerShown: false,
+            tabBarIcon: () => (
+              <View style={styles.createTab}>
+                <PlusIcon color={Colors.textWhite} />
+              </View>
             ),
           }}
         />
@@ -117,5 +133,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.activeTabBg,
     padding: 10,
     borderRadius: 10,
+  },
+  createTab: {
+    width: 65,
+    height: 65,
+    backgroundColor: Colors.primary,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 50,
   },
 });

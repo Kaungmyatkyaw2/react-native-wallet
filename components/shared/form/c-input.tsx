@@ -2,6 +2,7 @@ import { Colors } from "@/constants/colors";
 import React from "react";
 import {
   BlurEvent,
+  KeyboardType,
   StyleSheet,
   TextInput,
   TextStyle,
@@ -19,6 +20,7 @@ interface Props {
   onBlur?: (e: BlurEvent) => void;
   value?: string;
   error?: string;
+  keyboardType?: KeyboardType;
 }
 
 const CInput = ({
@@ -31,6 +33,7 @@ const CInput = ({
   onBlur,
   value,
   error,
+  keyboardType = "default",
 }: Props) => {
   return (
     <View>
@@ -41,6 +44,7 @@ const CInput = ({
         onChangeText={onChangeText}
         onBlur={onBlur}
         value={value}
+        keyboardType={keyboardType}
       />
       {error && <CText style={styles.error}>{error}</CText>}
     </View>

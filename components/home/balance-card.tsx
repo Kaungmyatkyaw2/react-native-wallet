@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { formatAmount } from "@/lib/utils";
-import { getMyWallet } from "@/services/wallet.services";
+import { getMyWallet } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
 import { History, Inbox, ShoppingBag } from "lucide-react-native";
 import React from "react";

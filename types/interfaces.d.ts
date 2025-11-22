@@ -1,5 +1,7 @@
 import { Session } from "@supabase/supabase-js";
 
+type RecordType = "INCOME" | "EXPENSE";
+
 interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
@@ -8,10 +10,32 @@ interface AuthContextType {
 }
 
 interface Wallet {
+  id: number;
+
   amount: number;
   created_at: Date;
   currency: string;
-  id: number;
   updated_at: Date;
   user_id: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+  type: RecordType;
+  user_id: string;
+}
+
+interface IRecord {
+  id: number;
+  amount: number;
+  title: string;
+  created_at: Date;
+  updated_at: Date;
+  type: RecordType;
+  user_id: string;
+  wallet_id: number;
+  category_id: number;
 }
