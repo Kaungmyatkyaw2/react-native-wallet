@@ -2,10 +2,25 @@ import { Colors } from "@/constants/colors";
 import { formatAmount } from "@/lib/utils";
 import { getMyWallet } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
-import { History, Inbox, ShoppingBag } from "lucide-react-native";
+import { router } from "expo-router";
+import { History, Inbox, LucideIcon, ShoppingBag } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
+
+const QuickLink = (info: { href: string; title: string; icon: LucideIcon }) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        router.push(info.href as any);
+      }}
+      style={styles.quickLink}
+    >
+      <info.icon color={Colors.bg} size={20} />
+      <CText style={styles.quickLinkText}>{info.title}</CText>
+    </TouchableOpacity>
+  );
+};
 
 const BalanceCard = () => {
   const { isLoading, isError, error, data } = useQuery({
@@ -32,18 +47,13 @@ const BalanceCard = () => {
       </View>
 
       <View style={styles.quickLinkCard}>
-        <View style={styles.quickLink}>
-          <Inbox color={Colors.bg} size={20} />
-          <CText style={styles.quickLinkText}>Income</CText>
-        </View>
-        <View style={styles.quickLink}>
-          <ShoppingBag color={Colors.bg} size={20} />
-          <CText style={styles.quickLinkText}>Expense</CText>
-        </View>
-        <View style={styles.quickLink}>
-          <History color={Colors.bg} size={20} />
-          <CText style={styles.quickLinkText}>History</CText>
-        </View>
+        <QuickLink title="Income" icon={Inbox} href="/create?type=INCOME" />
+        <QuickLink
+          title="Expense"
+          icon={ShoppingBag}
+          href="/create?type=EXPENSE"
+        />
+        <QuickLink title="History" icon={History} href="/history" />
       </View>
     </View>
   );

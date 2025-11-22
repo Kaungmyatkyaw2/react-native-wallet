@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { ChevronDown, ChevronUp } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -38,6 +38,10 @@ const CDropDown = ({
   const [selected, setSelected] = useState<Item | null>(
     data.find((el) => el.value == value) || null
   );
+
+  useEffect(() => {
+    setSelected(data.find((el) => el.value == value) || null);
+  }, [value]);
 
   const handleSelect = (item: Item) => {
     setSelected(item);

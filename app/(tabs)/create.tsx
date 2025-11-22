@@ -1,12 +1,14 @@
 import CreateRecordForm from "@/components/create-record/create-record-form";
 import CText from "@/components/shared/c-text";
 import { Colors } from "@/constants/colors";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const CreateScreen = () => {
+  const { type } = useLocalSearchParams();
+
   return (
     <View>
       <View style={styles.headerWrapper}>
@@ -16,7 +18,9 @@ const CreateScreen = () => {
         >
           <ChevronLeft />
         </TouchableOpacity>
-        <CText style={styles.headerTitleText}>Add Record</CText>
+        <CText style={styles.headerTitleText}>
+          Add {(type as string).toLocaleLowerCase() || "Record"}
+        </CText>
       </View>
 
       <CreateRecordForm />
@@ -43,6 +47,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     position: "relative",
     width: "100%",
+    textTransform: "capitalize",
   },
   backButton: {
     padding: 8,

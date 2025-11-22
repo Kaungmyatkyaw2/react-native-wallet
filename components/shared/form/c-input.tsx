@@ -42,6 +42,7 @@ const CInput = ({
         style={[styles.input, inputStyle]}
         placeholder={placeholder}
         onChangeText={onChangeText}
+        placeholderTextColor={Colors.mute}
         onBlur={onBlur}
         value={value}
         keyboardType={keyboardType}

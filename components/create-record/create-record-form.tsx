@@ -11,14 +11,15 @@ import {
 import { RecordType } from "@/types/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
-import React, { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
 import Toast from "react-native-toast-message";
-import SelectCategoryList from "./select-category-list";
 
 const CreateRecordForm = () => {
+  const { type } = useLocalSearchParams();
+
   const {
     reset: formReset,
     control,
@@ -37,6 +38,10 @@ const CreateRecordForm = () => {
     enabled: !!selectedType,
     queryFn: () => getAvailableCategories(selectedType as RecordType),
   });
+
+  useEffect(() => {
+    formReset({ type: (type as string) || undefined });
+  }, [type]);
 
   const formattedCategories =
     !isLoading &&
@@ -58,7 +63,7 @@ const CreateRecordForm = () => {
         type: "success",
         text1: "Successfully created the record",
       });
-      queryClient.invalidateQueries(["my-wallet"]);
+      queryClient.invalidateQueries({ queryKey: ["my-wallet"] });
       formReset();
       router.back();
     } catch (error) {
@@ -81,24 +86,28 @@ const CreateRecordForm = () => {
         gap: 30,
       }}
     >
-      <Controller
-        control={control}
-        rules={{ required: true }}
-        name="type"
-        render={({ field, fieldState }) => (
-          <CDropDown
-            data={RecordTypes}
-            error={fieldState.error?.message}
-            label="Type"
-            placeholder="Select the type of record"
-            labelStyle={styles.label}
-            value={field.value}
-            onSelect={(item) => {
-              field.onChange(item.value);
-            }}
-          />
-        )}
-      />
+      {!type && (
+        <Controller
+          control={control}
+          rules={{ required: true }}
+          name="type"
+          render={({ field, fieldState }) => {
+            return (
+              <CDropDown
+                data={RecordTypes}
+                error={fieldState.error?.message}
+                label="Type"
+                placeholder="Select the type of record"
+                labelStyle={styles.label}
+                value={field.value}
+                onSelect={(item) => {
+                  field.onChange(item.value);
+                }}
+              />
+            );
+          }}
+        />
+      )}
 
       <Controller
         control={control}
@@ -107,6 +116,7 @@ const CreateRecordForm = () => {
         render={({ field, fieldState }) => (
           <CInput
             label={`${selectedType == "INCOME" ? "Income" : "Expense"} Title`}
+            placeholder="Title of your record"
             labelStyle={styles.label}
             onBlur={field.onBlur}
             onChangeText={field.onChange}
@@ -123,6 +133,7 @@ const CreateRecordForm = () => {
         render={({ field, fieldState }) => (
           <CInput
             label="Amount"
+            placeholder="Amount of the record"
             keyboardType="number-pad"
             labelStyle={styles.label}
             onBlur={field.onBlur}
@@ -147,16 +158,34 @@ const CreateRecordForm = () => {
           rules={{ required: true }}
           name="category_id"
           render={({ field, fieldState }) => (
-            <SelectCategoryList
+            <CDropDown
+              data={formattedCategories || []}
               error={fieldState.error?.message}
+              label="Type"
+              placeholder="Select the category of record"
+              labelStyle={styles.label}
               value={field.value}
               onSelect={(item) => {
                 field.onChange(item.value);
               }}
-              data={formattedCategories || []}
             />
           )}
         />
+        // <Controller
+        //   control={control}
+        //   rules={{ required: true }}
+        //   name="category_id"
+        //   render={({ field, fieldState }) => (
+        //     <SelectCategoryList
+        //       error={fieldState.error?.message}
+        //       value={field.value}
+        //       onSelect={(item) => {
+        //         field.onChange(item.value);
+        //       }}
+        //       data={formattedCategories || []}
+        //     />
+        //   )}
+        // />
       )}
 
       <CButton

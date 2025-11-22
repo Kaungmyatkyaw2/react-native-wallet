@@ -80,7 +80,12 @@ export const createRecord = async (
 
   const updateWalletResponse = await supabase
     .from("wallets")
-    .update({ amount: wallet.amount + payload.amount })
+    .update({
+      amount:
+        payload.type == "INCOME"
+          ? wallet.amount + payload.amount
+          : wallet.amount - payload.amount,
+    })
     .eq("id", wallet.id)
     .eq("amount", wallet.amount);
 
