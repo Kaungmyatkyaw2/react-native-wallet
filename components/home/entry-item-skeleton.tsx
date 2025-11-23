@@ -1,39 +1,29 @@
 import { Colors } from "@/constants/colors";
-import { formatDate, getCategoryIcon } from "@/lib/utils";
-import { IRecord } from "@/types/interfaces";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import CText from "../shared/c-text";
 
-const EntryItem = ({ item }: { item: IRecord }) => {
-  const Icon = getCategoryIcon(item?.category?.name!);
-
+const EntryItemSkeleton = () => {
   return (
     <TouchableOpacity style={styles.wrapper}>
       <View style={styles.leftPartWrapper}>
-        <View style={styles.icon}>
-          <Icon color={Colors.text} />
-        </View>
+        <View style={[styles.icon, styles.skeleton]} />
         <View style={styles.iconTextWrapper}>
-          <CText style={styles.title}>{item.title}</CText>
-          <CText style={styles.description}>
-            {formatDate(new Date(item.created_at))}
-          </CText>
+          <View style={[styles.skeleton, styles.textLine]} />
+          <View style={[styles.skeleton, styles.textLineShort]} />
         </View>
       </View>
       <View style={styles.amountTextWrapper}>
-        <CText style={styles.title}>
-          {item.type == "EXPENSE" ? "- " : "+ "}${item.amount}
-        </CText>
-        <CText style={styles.description}>
-          {formatDate(new Date(item.created_at))}
-        </CText>
+        <View style={[styles.skeleton, styles.textLine]} />
+        <View style={[styles.skeleton, styles.textLineShort]} />
       </View>
+
+      {/* Shimmer overlay */}
+      <View style={styles.shimmerOverlay} />
     </TouchableOpacity>
   );
 };
 
-export default EntryItem;
+export default EntryItemSkeleton;
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -42,6 +32,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    overflow: "hidden",
   },
 
   leftPartWrapper: {
@@ -52,19 +43,11 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    backgroundColor: Colors.muteBg,
     padding: 10,
     borderRadius: 10,
     alignSelf: "flex-start",
-  },
-
-  title: {
-    fontFamily: "StackSans-Bold",
-    fontSize: 15,
-  },
-  description: {
-    fontSize: 12,
-    color: Colors.mute,
+    width: 40,
+    height: 40,
   },
 
   amountTextWrapper: {
@@ -75,5 +58,27 @@ const styles = StyleSheet.create({
   iconTextWrapper: {
     flexDirection: "column",
     gap: 5,
+    flex: 1,
+  },
+
+  // Skeleton styles
+  skeleton: {
+    backgroundColor: Colors.muteBg,
+    borderRadius: 4,
+  },
+
+  textLine: {
+    height: 16,
+    width: 120,
+  },
+
+  textLineShort: {
+    height: 12,
+    width: 80,
+  },
+
+  shimmerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    transform: [{ skewX: "-20deg" }],
   },
 });

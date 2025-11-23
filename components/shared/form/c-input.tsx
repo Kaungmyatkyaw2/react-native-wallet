@@ -12,7 +12,7 @@ import CText from "../c-text";
 
 interface Props {
   placeholder?: string;
-  label: string;
+  label?: string;
   required?: boolean;
   labelStyle?: TextStyle;
   inputStyle?: TextStyle;
@@ -37,7 +37,7 @@ const CInput = ({
 }: Props) => {
   return (
     <View>
-      <CText style={[styles.label, labelStyle]}>{label}</CText>
+      {!!label && <CText style={[styles.label, labelStyle]}>{label}</CText>}
       <TextInput
         style={[styles.input, inputStyle]}
         placeholder={placeholder}

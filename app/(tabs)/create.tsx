@@ -19,7 +19,7 @@ const CreateScreen = () => {
           <ChevronLeft />
         </TouchableOpacity>
         <CText style={styles.headerTitleText}>
-          Add {(type as string).toLocaleLowerCase() || "Record"}
+          Add {(type as string)?.toLocaleLowerCase() || "Record"}
         </CText>
       </View>
 

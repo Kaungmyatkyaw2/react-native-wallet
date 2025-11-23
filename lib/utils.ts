@@ -29,3 +29,29 @@ export const formatAmount = (amount: number = 0, currency: string = "") => {
     currency: currency,
   }).format(amount);
 };
+
+import {
+  BookOpen,
+  Briefcase,
+  Bus,
+  HelpCircle, // Default icon
+  ShoppingCart,
+  Utensils,
+  Wallet,
+} from "lucide-react-native";
+
+export const CategoryIcons = {
+  Tuition: BookOpen,
+  Shopping: ShoppingCart,
+  Transportation: Bus,
+  Food: Utensils,
+  Job: Briefcase,
+  "Pocket Money": Wallet,
+  default: HelpCircle,
+} as const;
+
+export type CategoryType = keyof typeof CategoryIcons;
+
+export const getCategoryIcon = (category: string) => {
+  return CategoryIcons[category as CategoryType] || CategoryIcons.default;
+};

@@ -32,10 +32,18 @@ interface IRecord {
   id: number;
   amount: number;
   title: string;
-  created_at: Date;
+  created_at: string;
   updated_at: Date;
   type: RecordType;
   user_id: string;
   wallet_id: number;
   category_id: number;
+  category?: Category;
+}
+
+interface PaginationParams {
+  limit?: number;
+  page?: number;
+  sort_by?: string;
+  sort_dir?: string;
 }

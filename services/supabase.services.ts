@@ -1,5 +1,11 @@
 import { supabase } from "@/lib/supabase";
-import { Category, IRecord, RecordType, Wallet } from "@/types/interfaces";
+import {
+  Category,
+  IRecord,
+  PaginationParams,
+  RecordType,
+  Wallet,
+} from "@/types/interfaces";
 
 export const getMyWallet: () => Promise<Wallet> = async () => {
   const sessionResponse = await supabase.auth.getSession();
@@ -94,4 +100,62 @@ export const createRecord = async (
   }
 
   return createRecordResponse.data;
+};
+
+export const getLatestRecords = async (take: number) => {
+  const wallet = await getMyWallet();
+
+  const recordsResponse = await supabase
+    .from("records")
+    .select(
+      `
+      *,
+      category:category_id (
+        id,
+        name
+      )
+    `
+    )
+    .eq("wallet_id", wallet.id)
+    .limit(take)
+    .order("created_at", { ascending: false });
+
+  if (recordsResponse.error) {
+    throw new Error(recordsResponse.error.message);
+  }
+
+  return recordsResponse.data as IRecord[];
+};
+
+export const getRecords = async ({
+  limit = 10,
+  page = 1,
+  sort_by = "created_at",
+  sort_dir = "desc",
+}: PaginationParams) => {
+  const wallet = await getMyWallet();
+
+  const from = (page - 1) * limit;
+  const to = from + limit + 1;
+
+  const recordsResponse = await supabase
+    .from("records")
+    .select(
+      `
+      *,
+      category:category_id (
+        id,
+        name
+      )
+    `
+    )
+    .eq("wallet_id", wallet.id)
+    .range(from, to)
+    .order(sort_by, { ascending: sort_dir == "asc" });
+
+  if (recordsResponse.error) {
+    throw new Error(recordsResponse.error.message);
+  }
+
+  return { nextPage: page + 1, data: recordsResponse.data as IRecord[] };
 };
