@@ -28,6 +28,12 @@ interface Category {
   user_id: string;
 }
 
+interface PaymentMethod {
+  id: number;
+  name: string;
+  created_at: Date;
+}
+
 interface IRecord {
   id: number;
   amount: number;
@@ -38,7 +44,9 @@ interface IRecord {
   user_id: string;
   wallet_id: number;
   category_id: number;
+  payment_method_id: number;
   category?: Category;
+  payment_method?: PaymentMethod;
 }
 
 interface PaginationParams {

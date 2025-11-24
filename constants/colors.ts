@@ -19,6 +19,7 @@ export const Colors = {
   green: "#059669",
   yellow: "#D97706",
   blue: "#2563EB",
+  redMuteBg: "#dc26268c",
 };
 
 export type ColorType = keyof typeof Colors;

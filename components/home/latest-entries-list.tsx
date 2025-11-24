@@ -1,7 +1,10 @@
+import { Colors } from "@/constants/colors";
 import { getLatestRecords } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { ArrowRight } from "lucide-react-native";
 import React from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
 import EntryItem from "./entry-item";
 import EntryItemSkeleton from "./entry-item-skeleton";
@@ -14,7 +17,17 @@ const LatestEntriesList = () => {
 
   return (
     <View>
-      <CText style={styles.headerText}>Latest Entries</CText>
+      <View style={styles.headerContainer}>
+        <CText style={styles.headerText}>Latest Entries</CText>
+        <TouchableOpacity
+          style={styles.toHistoryButton}
+          onPress={() => {
+            router.push("/history");
+          }}
+        >
+          <ArrowRight />
+        </TouchableOpacity>
+      </View>
       {isLoading ? (
         <View style={[styles.listContainer, styles.skeletonContainer]}>
           <EntryItemSkeleton />
@@ -39,12 +52,24 @@ const LatestEntriesList = () => {
 export default LatestEntriesList;
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   headerText: {
     fontFamily: "StackSans-Bold",
     fontSize: 18,
   },
+  toHistoryButton: {
+    padding: 8,
+    borderRadius: 15,
+    backgroundColor: Colors.muteBg,
+  },
   listContainer: {
-    marginTop: 20,
+    marginTop: 25,
   },
   skeletonContainer: {
     display: "flex",

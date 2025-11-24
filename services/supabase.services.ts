@@ -3,6 +3,7 @@ import {
   Category,
   IRecord,
   PaginationParams,
+  PaymentMethod,
   RecordType,
   Wallet,
 } from "@/types/interfaces";
@@ -61,6 +62,28 @@ export const getAvailableCategories = async (type?: RecordType) => {
   return response.data as Category[];
 };
 
+export const getPayments = async (type?: RecordType) => {
+  const sessionResponse = await supabase.auth.getSession();
+
+  if (sessionResponse.error) {
+    throw new Error("You don't have permission to perform this action");
+  }
+
+  let query = supabase.from("payment_methods").select("*");
+
+  const response = await query;
+
+  if (response.error) {
+    throw new Error(response.error.message);
+  }
+
+  if (response.data.length === 0) {
+    throw new Error("No payments found");
+  }
+
+  return response.data as PaymentMethod[];
+};
+
 export const createRecord = async (
   payload: Omit<
     IRecord,
@@ -76,6 +99,7 @@ export const createRecord = async (
       wallet_id: wallet.id,
       title: payload.title,
       category_id: payload.category_id,
+      payment_method_id: payload.payment_method_id,
       type: payload.type,
     },
   ]);
@@ -113,6 +137,10 @@ export const getLatestRecords = async (take: number) => {
       category:category_id (
         id,
         name
+      ),
+      payment_method:payment_method_id (
+        id,
+        name
       )
     `
     )
@@ -136,7 +164,7 @@ export const getRecords = async ({
   const wallet = await getMyWallet();
 
   const from = (page - 1) * limit;
-  const to = from + limit + 1;
+  const to = from + limit - 1;
 
   const recordsResponse = await supabase
     .from("records")
@@ -144,6 +172,10 @@ export const getRecords = async ({
       `
       *,
       category:category_id (
+        id,
+        name
+      ),
+      payment_method:payment_method_id (
         id,
         name
       )

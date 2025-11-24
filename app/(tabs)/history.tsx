@@ -6,34 +6,22 @@ import { Colors } from "@/constants/colors";
 import { getRecords } from "@/services/supabase.services";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useMemo } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HistoryScreen = () => {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: ["my-records"],
-    initialPageParam: 1,
-    queryFn: ({ pageParam }) => getRecords({ page: pageParam }),
-    getNextPageParam: (lastPage) => {
-      if (lastPage.data.length < 10) {
-        return undefined;
-      }
-      return lastPage.nextPage;
-    },
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ["my-records"],
+      initialPageParam: 1,
+      queryFn: ({ pageParam }) => getRecords({ page: pageParam, limit: 10 }),
+      getNextPageParam: (lastPage) => {
+        if (lastPage.data.length < 10) {
+          return undefined;
+        }
+        return lastPage.nextPage;
+      },
+    });
 
   const records = useMemo(
     () => data?.pages.flatMap((page) => page.data) || [],
@@ -41,45 +29,48 @@ const HistoryScreen = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <SafeAreaView>
-        <CText style={styles.header}>Record History</CText>
-        <CInput
-          placeholder="Search by the title"
-          inputStyle={{ marginTop: 20 }}
+    <SafeAreaView style={styles.container}>
+      <CText style={[styles.header, styles.padContainer]}>Record History</CText>
+      <CInput
+        placeholder="Search by the title"
+        inputStyle={{ marginTop: 20, marginHorizontal: 20 }}
+      />
+      {isLoading && records.length == 0 ? (
+        <View
+          style={[
+            styles.listContainer,
+            styles.skeletonContainer,
+            styles.padContainer,
+          ]}
+        >
+          <EntryItemSkeleton />
+          <EntryItemSkeleton />
+          <EntryItemSkeleton />
+          <EntryItemSkeleton />
+          <EntryItemSkeleton />
+        </View>
+      ) : (
+        <FlatList
+          style={[styles.listContainer, styles.padContainer]}
+          data={records || []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <EntryItem item={item} />}
+          onEndReachedThreshold={0.2}
+          onEndReached={() =>
+            hasNextPage && !isFetchingNextPage && fetchNextPage()
+          }
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <ActivityIndicator
+                color={Colors.primary}
+                size="small"
+                style={{ marginBottom: 5 }}
+              />
+            ) : null
+          }
         />
-        {isLoading && records.length == 0 ? (
-          <View style={[styles.listContainer, styles.skeletonContainer]}>
-            <EntryItemSkeleton />
-            <EntryItemSkeleton />
-            <EntryItemSkeleton />
-            <EntryItemSkeleton />
-            <EntryItemSkeleton />
-          </View>
-        ) : (
-          <FlatList
-            style={styles.listContainer}
-            data={records || []}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <EntryItem item={item} />}
-            scrollEnabled={false}
-            onEndReachedThreshold={0.2}
-            onEndReached={() =>
-              hasNextPage && !isFetchingNextPage && fetchNextPage()
-            }
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <ActivityIndicator
-                  color="blue"
-                  size="small"
-                  style={{ marginBottom: 5 }}
-                />
-              ) : null
-            }
-          />
-        )}
-      </SafeAreaView>
-    </ScrollView>
+      )}
+    </SafeAreaView>
   );
 };
 
@@ -91,9 +82,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 10,
   },
-  container: {
+  padContainer: {
     paddingHorizontal: 20,
+  },
+  container: {
     paddingTop: 20,
+    paddingBottom: 60,
   },
   header: {
     fontSize: 20,
@@ -102,5 +96,6 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     marginTop: 20,
+    minHeight: 100,
   },
 });

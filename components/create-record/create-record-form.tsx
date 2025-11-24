@@ -7,6 +7,7 @@ import { CreateRecordSchema, CreateRecordType } from "@/schema/record.schema";
 import {
   createRecord,
   getAvailableCategories,
+  getPayments,
 } from "@/services/supabase.services";
 import { RecordType } from "@/types/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,10 +34,23 @@ const CreateRecordForm = () => {
 
   const selectedType = watch("type");
 
-  const { isLoading, isError, data } = useQuery({
+  const {
+    isLoading: isLoadingCategories,
+    isError: isErrorCategories,
+    data: categoriesData,
+  } = useQuery({
     queryKey: ["categories", selectedType],
     enabled: !!selectedType,
     queryFn: () => getAvailableCategories(selectedType as RecordType),
+  });
+
+  const {
+    isLoading: isLoadingPaymentMethods,
+    isError: isErrorPaymentMethods,
+    data: paymentData,
+  } = useQuery({
+    queryKey: ["payments", selectedType],
+    queryFn: () => getPayments(),
   });
 
   useEffect(() => {
@@ -44,9 +58,14 @@ const CreateRecordForm = () => {
   }, [type]);
 
   const formattedCategories =
-    !isLoading &&
-    !isError &&
-    data?.map((el) => ({ label: el.name, value: el.id.toString() }));
+    !isLoadingCategories &&
+    !isErrorCategories &&
+    categoriesData?.map((el) => ({ label: el.name, value: el.id.toString() }));
+
+  const formattedPayments =
+    !isLoadingPaymentMethods &&
+    !isErrorPaymentMethods &&
+    paymentData?.map((el) => ({ label: el.name, value: el.id.toString() }));
 
   const onSubmit = async (formData: CreateRecordType) => {
     try {
@@ -57,6 +76,7 @@ const CreateRecordForm = () => {
         category_id: Number(formData.category_id),
         title: formData.title,
         type: formData.type as RecordType,
+        payment_method_id: Number(formData.payment_method_id),
       });
 
       Toast.show({
@@ -154,6 +174,25 @@ const CreateRecordForm = () => {
         )}
       />
 
+      <Controller
+        control={control}
+        rules={{ required: true }}
+        name="payment_method_id"
+        render={({ field, fieldState }) => (
+          <CDropDown
+            data={formattedPayments || []}
+            error={fieldState.error?.message}
+            label="Payment Method"
+            placeholder="Select the payment of record"
+            labelStyle={styles.label}
+            value={field.value}
+            onSelect={(item) => {
+              field.onChange(item.value);
+            }}
+          />
+        )}
+      />
+
       {!!selectedType && (
         <Controller
           control={control}
@@ -163,7 +202,7 @@ const CreateRecordForm = () => {
             <CDropDown
               data={formattedCategories || []}
               error={fieldState.error?.message}
-              label="Type"
+              label="Category"
               placeholder="Select the category of record"
               labelStyle={styles.label}
               value={field.value}

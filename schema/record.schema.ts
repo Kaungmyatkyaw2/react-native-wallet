@@ -5,6 +5,7 @@ export const CreateRecordSchema = z.object({
   title: z.string(),
   amount: z.number().min(1),
   category_id: z.string(),
+  payment_method_id: z.string(),
 });
 
 export type CreateRecordType = z.infer<typeof CreateRecordSchema>;

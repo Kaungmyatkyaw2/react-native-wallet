@@ -2,6 +2,7 @@ import { Colors } from "@/constants/colors";
 import { useAuth } from "@/contexts/auth.context";
 import { Tabs, usePathname } from "expo-router";
 import {
+  BanknoteArrowDown,
   History,
   Home,
   LucideIcon,
@@ -77,12 +78,12 @@ const _layout = () => {
         />
 
         <Tabs.Screen
-          name="overview"
+          name="saving"
           options={{
-            title: "Overview",
+            title: "Saving",
             headerShown: false,
             tabBarIcon: ({ focused }) => (
-              <CustomTab focused={focused} icon={PieChart} />
+              <CustomTab focused={focused} icon={BanknoteArrowDown} />
             ),
           }}
         />
@@ -101,6 +102,17 @@ const _layout = () => {
         />
 
         <Tabs.Screen
+          name="overview"
+          options={{
+            title: "Overview",
+            headerShown: false,
+            tabBarIcon: ({ focused }) => (
+              <CustomTab focused={focused} icon={PieChart} />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
           name="history"
           options={{
             title: "History",
@@ -108,6 +120,7 @@ const _layout = () => {
             tabBarIcon: ({ focused }) => (
               <CustomTab focused={focused} icon={History} />
             ),
+            href: null,
           }}
         />
 

@@ -22,12 +22,15 @@ const EntryItem = ({ item }: { item: IRecord }) => {
         </View>
       </View>
       <View style={styles.amountTextWrapper}>
-        <CText style={styles.title}>
+        <CText
+          style={[
+            styles.title,
+            { color: item.type == "EXPENSE" ? Colors.red : Colors.green },
+          ]}
+        >
           {item.type == "EXPENSE" ? "- " : "+ "}${item.amount}
         </CText>
-        <CText style={styles.description}>
-          {formatDate(new Date(item.created_at))}
-        </CText>
+        <CText style={styles.description}>{item.payment_method?.name}</CText>
       </View>
     </TouchableOpacity>
   );
