@@ -191,3 +191,175 @@ export const getRecords = async ({
 
   return { nextPage: page + 1, data: recordsResponse.data as IRecord[] };
 };
+
+export const getCategoryExpensesForPieChart = async (type: RecordType) => {
+  const wallet = await getMyWallet();
+
+  const sessionResponse = await supabase.auth.getSession();
+  if (sessionResponse.error) throw new Error("No permission");
+
+  const userId = sessionResponse.data.session?.user.id;
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  let categoryQuery = supabase
+    .from("categories")
+    .select("id")
+    .eq("type", type)
+    .or(`isDefault.eq.true,user_id.eq.${userId}`);
+
+  const { data: categories, error: categoryError } = await categoryQuery;
+
+  if (categoryError) throw new Error(categoryError.message);
+  if (!categories?.length) throw new Error("No categories found");
+
+  const allowedCategoryIds = categories.map((cat) => cat.id);
+
+  let query = supabase
+    .from("records")
+    .select(
+      `
+      amount,
+      category_id,
+          category:category_id (
+        id,
+        name,
+        color
+      )
+    `
+    )
+    .eq("type", type)
+    .in("category_id", allowedCategoryIds)
+    .gte("created_at", startOfMonth.toISOString())
+    .lte("created_at", endOfMonth.toISOString());
+
+  if (wallet.id) {
+    query = query.eq("wallet_id", wallet.id);
+  }
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  if (!data?.length) throw new Error("No expenses found");
+
+  const categoryMap = new Map();
+
+  data?.forEach((record) => {
+    const category = record.category as unknown as Category;
+    if (!categoryMap.has(category.id)) {
+      categoryMap.set(category.id, {
+        id: category.id,
+        name: category.name,
+        totalAmount: 0,
+        color: category.color,
+      });
+    }
+    categoryMap.get(category.id).totalAmount += record.amount;
+  });
+
+  const categoriesWithTotals = Array.from(categoryMap.values());
+  const totalAmount = categoriesWithTotals.reduce(
+    (sum, cat) => sum + cat.totalAmount,
+    0
+  );
+
+  const pieChartData = categoriesWithTotals.map((cat) => ({
+    ...cat,
+    percentage: Math.round((cat.totalAmount / totalAmount) * 100 * 100) / 100,
+  }));
+
+  return { data: pieChartData, totalAmount };
+};
+
+export interface CategoryStats {
+  id: string;
+  name: string;
+  color: string;
+  record_count: number;
+  total_amount: number;
+  percentage?: number;
+}
+
+export const getCategoriesWithStats = async (
+  type?: "EXPENSE" | "INCOME"
+): Promise<{
+  data: CategoryStats[];
+}> => {
+  try {
+    // Build the query
+    let query = supabase
+      .from("categories")
+      .select(
+        `
+        id,
+        name,
+        color,
+        records:records!inner(
+          amount,
+          type
+        )
+      `
+      )
+      .eq("type", type);
+
+    if (type) {
+      query = query.eq("records.type", type);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return {
+        data: [],
+      };
+    }
+
+    // Calculate statistics for each category
+    const categoriesWithStats: CategoryStats[] = data.map((category) => {
+      const record_count = category.records?.length || 0;
+
+      const total_amount =
+        category.records?.reduce((sum, record) => {
+          return sum + (record.amount || 0);
+        }, 0) || 0;
+
+      return {
+        id: category.id,
+        name: category.name,
+        color: category.color,
+        record_count,
+        total_amount,
+      };
+    });
+
+    // Calculate totals
+    const totalAmount = categoriesWithStats.reduce((sum, category) => {
+      return sum + category.total_amount;
+    }, 0);
+
+    const totalRecords = categoriesWithStats.reduce((sum, category) => {
+      return sum + category.record_count;
+    }, 0);
+
+    // Calculate percentages
+    const categoriesWithPercentage = categoriesWithStats.map((category) => ({
+      ...category,
+      percentage:
+        totalAmount > 0
+          ? Math.round((category.total_amount / totalAmount) * 100)
+          : 0,
+    }));
+
+    return {
+      data: categoriesWithPercentage,
+    };
+  } catch (error) {
+    console.error("Error fetching categories with stats:", error);
+    throw error;
+  }
+};

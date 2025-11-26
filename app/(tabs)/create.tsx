@@ -13,7 +13,7 @@ const CreateScreen = () => {
     <View>
       <View style={styles.headerWrapper}>
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.push("/")}
           style={styles.backButton}
         >
           <ChevronLeft />

@@ -26,6 +26,7 @@ interface Category {
   updated_at: Date;
   type: RecordType;
   user_id: string;
+  color: string;
 }
 
 interface PaymentMethod {
