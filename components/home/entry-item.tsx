@@ -1,12 +1,18 @@
 import { Colors } from "@/constants/colors";
 import { formatDate, getCategoryIcon } from "@/lib/utils";
+import { getMyWallet } from "@/services/supabase.services";
 import { IRecord } from "@/types/interfaces";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
 
 const EntryItem = ({ item }: { item: IRecord }) => {
   const Icon = getCategoryIcon(item?.category?.name!);
+  const { data: myWallet } = useQuery({
+    queryKey: ["my-wallet"],
+    queryFn: () => getMyWallet(),
+  });
 
   return (
     <TouchableOpacity style={styles.wrapper}>
@@ -28,7 +34,8 @@ const EntryItem = ({ item }: { item: IRecord }) => {
             { color: item.type == "EXPENSE" ? Colors.red : Colors.green },
           ]}
         >
-          {item.type == "EXPENSE" ? "- " : "+ "}${item.amount}
+          {item.type == "EXPENSE" ? "- " : "+ "}
+          {item.amount} {myWallet?.currency}
         </CText>
         <CText style={styles.description}>{item.payment_method?.name}</CText>
       </View>

@@ -1,12 +1,17 @@
 import { Colors } from "@/constants/colors";
 import { getCategoryIcon } from "@/lib/utils";
-import { CategoryStats } from "@/services/supabase.services";
+import { CategoryStats, getMyWallet } from "@/services/supabase.services";
+import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
 
 const CategoryCard = ({ category }: { category: CategoryStats }) => {
   const Icon = getCategoryIcon(category.name);
+  const { data: myWallet } = useQuery({
+    queryKey: ["my-wallet"],
+    queryFn: () => getMyWallet(),
+  });
 
   return (
     <TouchableOpacity style={styles.wrapper}>
@@ -16,11 +21,15 @@ const CategoryCard = ({ category }: { category: CategoryStats }) => {
         </View>
         <View style={styles.iconTextWrapper}>
           <CText style={styles.title}>{category.name}</CText>
-          <CText style={styles.description}>{category.percentage}%</CText>
+          <CText style={styles.description}>
+            {category.percentage}% of total
+          </CText>
         </View>
       </View>
       <View style={styles.amountTextWrapper}>
-        <CText style={[styles.title]}>${category.total_amount}</CText>
+        <CText style={[styles.title]}>
+          {category.total_amount} {myWallet?.currency}
+        </CText>
         <CText style={styles.description}>
           {category.record_count} records
         </CText>

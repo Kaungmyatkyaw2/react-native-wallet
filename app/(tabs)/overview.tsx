@@ -6,44 +6,46 @@ import { getMyWallet } from "@/services/supabase.services";
 import { RecordType } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const OverviewScreen = () => {
   const [type, setType] = useState<RecordType>("EXPENSE");
 
-  const { isLoading, data: myWallet } = useQuery({
+  const { data: myWallet } = useQuery({
     queryKey: ["my-wallet"],
     queryFn: () => getMyWallet(),
   });
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.tabContainer}>
-        <View style={styles.tabBox}>
-          <TouchableOpacity
-            style={[styles.tab, type == "EXPENSE" && styles.activeTab]}
-            onPress={() => {
-              setType("EXPENSE");
-            }}
-          >
-            <CText style={{ textAlign: "center" }}>Income</CText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tab, type == "INCOME" && styles.activeTab]}
-            onPress={() => {
-              setType("INCOME");
-            }}
-          >
-            <CText style={{ textAlign: "center" }}>Expense</CText>
-          </TouchableOpacity>
+    <ScrollView style={styles.container}>
+      <SafeAreaView>
+        <View style={styles.tabContainer}>
+          <View style={styles.tabBox}>
+            <TouchableOpacity
+              style={[styles.tab, type == "EXPENSE" && styles.activeTab]}
+              onPress={() => {
+                setType("EXPENSE");
+              }}
+            >
+              <CText style={{ textAlign: "center" }}>Income</CText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.tab, type == "INCOME" && styles.activeTab]}
+              onPress={() => {
+                setType("INCOME");
+              }}
+            >
+              <CText style={{ textAlign: "center" }}>Expense</CText>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <OverviewPieChart type={type} wallet={myWallet!} />
+        <OverviewPieChart type={type} wallet={myWallet!} />
 
-      <CategoryList type={type} />
-    </SafeAreaView>
+        <CategoryList type={type} />
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -53,6 +55,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingTop: 20,
+    minHeight: "100%",
   },
   tabContainer: {
     width: "100%",

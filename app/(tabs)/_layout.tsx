@@ -2,13 +2,13 @@ import { Colors } from "@/constants/colors";
 import { useAuth } from "@/contexts/auth.context";
 import { Tabs, usePathname } from "expo-router";
 import {
-  BanknoteArrowDown,
   History,
   Home,
   LucideIcon,
   PieChart,
   PlusIcon,
   Settings,
+  Target,
 } from "lucide-react-native";
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -83,7 +83,7 @@ const _layout = () => {
             title: "Saving",
             headerShown: false,
             tabBarIcon: ({ focused }) => (
-              <CustomTab focused={focused} icon={BanknoteArrowDown} />
+              <CustomTab focused={focused} icon={Target} />
             ),
           }}
         />
