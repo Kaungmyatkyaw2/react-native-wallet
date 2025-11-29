@@ -287,7 +287,6 @@ export const getCategoriesWithStats = async (
   data: CategoryStats[];
 }> => {
   try {
-    // Build the query
     let query = supabase
       .from("categories")
       .select(
@@ -295,16 +294,16 @@ export const getCategoriesWithStats = async (
         id,
         name,
         color,
-        records:records!inner(
+        records(
           amount,
           type
         )
       `
       )
-      .eq("type", type);
+      .eq("isDefault", true);
 
     if (type) {
-      query = query.eq("records.type", type);
+      query = query.eq("type", type);
     }
 
     const { data, error } = await query;
@@ -319,14 +318,17 @@ export const getCategoriesWithStats = async (
       };
     }
 
-    // Calculate statistics for each category
     const categoriesWithStats: CategoryStats[] = data.map((category) => {
-      const record_count = category.records?.length || 0;
+      // Filter records by type if type was provided
+      const records = type
+        ? category.records?.filter((record) => record.type === type) || []
+        : category.records || [];
 
-      const total_amount =
-        category.records?.reduce((sum, record) => {
-          return sum + (record.amount || 0);
-        }, 0) || 0;
+      const record_count = records.length;
+
+      const total_amount = records.reduce((sum, record) => {
+        return sum + (record.amount || 0);
+      }, 0);
 
       return {
         id: category.id,
@@ -337,20 +339,19 @@ export const getCategoriesWithStats = async (
       };
     });
 
-    // Calculate totals
-    const totalAmount = categoriesWithStats.reduce((sum, category) => {
+    // Calculate totals (only from categories that have records)
+    const categoriesWithRecords = categoriesWithStats.filter(
+      (category) => category.record_count > 0
+    );
+    const totalAmount = categoriesWithRecords.reduce((sum, category) => {
       return sum + category.total_amount;
-    }, 0);
-
-    const totalRecords = categoriesWithStats.reduce((sum, category) => {
-      return sum + category.record_count;
     }, 0);
 
     // Calculate percentages
     const categoriesWithPercentage = categoriesWithStats.map((category) => ({
       ...category,
       percentage:
-        totalAmount > 0
+        category.record_count > 0 && totalAmount > 0
           ? Math.round((category.total_amount / totalAmount) * 100)
           : 0,
     }));

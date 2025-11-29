@@ -2,7 +2,7 @@ import { Colors } from "@/constants/colors";
 import { getLatestRecords } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { ArrowRight } from "lucide-react-native";
+import { ArrowRight, BarChart3 } from "lucide-react-native";
 import React from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
@@ -10,10 +10,12 @@ import EntryItem from "./entry-item";
 import EntryItemSkeleton from "./entry-item-skeleton";
 
 const LatestEntriesList = () => {
-  const { isLoading, data, isError } = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ["latest-records"],
     queryFn: () => getLatestRecords(5),
   });
+
+  const noData = !isLoading && (!data || data.length === 0);
 
   return (
     <View>
@@ -28,6 +30,14 @@ const LatestEntriesList = () => {
           <ArrowRight />
         </TouchableOpacity>
       </View>
+
+      {noData && (
+        <View style={styles.noDataContainer}>
+          <BarChart3 color={Colors.textSecondary} size={30} />
+          <CText style={styles.noDataText}>No entries are recorded yet</CText>
+        </View>
+      )}
+
       {isLoading ? (
         <View style={[styles.listContainer, styles.skeletonContainer]}>
           <EntryItemSkeleton />
@@ -37,13 +47,15 @@ const LatestEntriesList = () => {
           <EntryItemSkeleton />
         </View>
       ) : (
-        <FlatList
-          data={data || []}
-          keyExtractor={(item) => item.id.toString()}
-          style={styles.listContainer}
-          renderItem={({ item }) => <EntryItem item={item} />}
-          scrollEnabled={false}
-        />
+        !noData && (
+          <FlatList
+            data={data || []}
+            keyExtractor={(item) => item.id.toString()}
+            style={styles.listContainer}
+            renderItem={({ item }) => <EntryItem item={item} />}
+            scrollEnabled={false}
+          />
+        )
       )}
     </View>
   );
@@ -54,7 +66,6 @@ export default LatestEntriesList;
 const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -68,11 +79,22 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: Colors.muteBg,
   },
+
+  noDataContainer: {
+    marginTop: 45,
+    alignItems: "center",
+    gap: 10,
+  },
+  noDataText: {
+    fontFamily: "StackSans-Regular",
+    fontSize: 16,
+    color: Colors.textSecondary,
+  },
+
   listContainer: {
     marginTop: 25,
   },
   skeletonContainer: {
-    display: "flex",
     flexDirection: "column",
     gap: 10,
   },

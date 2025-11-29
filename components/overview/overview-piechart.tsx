@@ -45,6 +45,17 @@ const OverviewPieChart = ({
     return <ChartSkeleton />;
   }
 
+  if (!data?.data.length) {
+    return (
+      <View style={styles.noDataBox}>
+        <View style={styles.noDataIcon} />
+        <CText style={styles.noDataTitle}>No Data Found</CText>
+        <CText style={styles.noDataSubtitle}>
+          There are no records available for this category yet.
+        </CText>
+      </View>
+    );
+  }
   return (
     <>
       <View style={styles.chartContainer}>
@@ -64,9 +75,8 @@ const OverviewPieChart = ({
             marginVertical: 25,
           }}
         >
-          {" "}
-          You have spent total of {data?.totalAmount} {wallet?.currency} this
-          month
+          You have {type == "EXPENSE" ? "spent" : "earned"} total of{" "}
+          {data?.totalAmount} {wallet?.currency} this month
         </CText>
         <View style={styles.labelContainer}>
           {pieData?.map((el) => (
@@ -149,5 +159,43 @@ const styles = StyleSheet.create({
     height: 12,
     backgroundColor: Colors.border,
     borderRadius: 4,
+  },
+  // No Data UI
+  noDataBox: {
+    width: "100%",
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.bg,
+    marginTop: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+
+  noDataIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.border,
+    opacity: 0.6,
+    marginBottom: 5,
+  },
+
+  noDataTitle: {
+    fontSize: 16,
+    fontFamily: "StackSans-SemiBold",
+    color: Colors.text,
+    marginTop: 8,
+  },
+
+  noDataSubtitle: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    textAlign: "center",
+    width: "80%",
+    marginTop: 4,
   },
 });

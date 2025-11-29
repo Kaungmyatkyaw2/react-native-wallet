@@ -55,3 +55,14 @@ export type CategoryType = keyof typeof CategoryIcons;
 export const getCategoryIcon = (category: string) => {
   return CategoryIcons[category as CategoryType] || CategoryIcons.default;
 };
+
+export const getInitials = (name?: string) => {
+  if (!name) return "U"; // fallback
+
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((n) => n[0].toUpperCase())
+    .join("")
+    .slice(0, 3);
+};

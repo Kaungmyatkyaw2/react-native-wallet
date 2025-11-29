@@ -5,6 +5,7 @@ import CInput from "@/components/shared/form/c-input";
 import { Colors } from "@/constants/colors";
 import { getRecords } from "@/services/supabase.services";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { BarChart3 } from "lucide-react-native";
 import React, { useMemo } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,6 +29,8 @@ const HistoryScreen = () => {
     [data]
   );
 
+  const noData = !isLoading && (records.length == 0 || !records.length);
+
   return (
     <SafeAreaView style={styles.container}>
       <CText style={[styles.header, styles.padContainer]}>Record History</CText>
@@ -35,7 +38,13 @@ const HistoryScreen = () => {
         placeholder="Search by the title"
         inputStyle={{ marginTop: 20, marginHorizontal: 20 }}
       />
-      {isLoading && records.length == 0 ? (
+      {noData && (
+        <View style={styles.noDataContainer}>
+          <BarChart3 color={Colors.textSecondary} size={30} />
+          <CText style={styles.noDataText}>No entries are recorded yet</CText>
+        </View>
+      )}
+      {isLoading ? (
         <View
           style={[
             styles.listContainer,
@@ -97,5 +106,15 @@ const styles = StyleSheet.create({
   listContainer: {
     marginTop: 20,
     minHeight: 100,
+  },
+  noDataContainer: {
+    marginTop: 45,
+    alignItems: "center",
+    gap: 10,
+  },
+  noDataText: {
+    fontFamily: "StackSans-Regular",
+    fontSize: 16,
+    color: Colors.textSecondary,
   },
 });

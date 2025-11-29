@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/colors";
 import { useAuth } from "@/contexts/auth.context";
-import { Tabs, usePathname } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import {
   History,
   Home,
@@ -48,6 +48,10 @@ const _layout = () => {
         <ActivityIndicator />
       </View>
     );
+  }
+
+  if (!session) {
+    return <Redirect href="/login" />;
   }
 
   return (

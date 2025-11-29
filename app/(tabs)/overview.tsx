@@ -23,17 +23,17 @@ const OverviewScreen = () => {
         <View style={styles.tabContainer}>
           <View style={styles.tabBox}>
             <TouchableOpacity
-              style={[styles.tab, type == "EXPENSE" && styles.activeTab]}
+              style={[styles.tab, type == "INCOME" && styles.activeTab]}
               onPress={() => {
-                setType("EXPENSE");
+                setType("INCOME");
               }}
             >
               <CText style={{ textAlign: "center" }}>Income</CText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tab, type == "INCOME" && styles.activeTab]}
+              style={[styles.tab, type == "EXPENSE" && styles.activeTab]}
               onPress={() => {
-                setType("INCOME");
+                setType("EXPENSE");
               }}
             >
               <CText style={{ textAlign: "center" }}>Expense</CText>
