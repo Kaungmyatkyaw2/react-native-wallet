@@ -1,5 +1,5 @@
-import { Colors } from "@/constants/colors";
 import { useAuth } from "@/contexts/auth.context";
+import { useTheme } from "@/contexts/theme.context";
 import { Redirect, Tabs, usePathname } from "expo-router";
 import {
   History,
@@ -20,19 +20,27 @@ const CustomTab = ({
   focused: boolean;
   icon: LucideIcon;
 }) => {
+  const { colors } = useTheme();
+
   if (focused) {
     return (
-      <View style={styles.activeTab}>
-        <Icon color={Colors.primary} />
+      <View
+        style={[
+          styles.activeTab,
+          { backgroundColor: colors.background.activeTab },
+        ]}
+      >
+        <Icon color={colors.primary.main} />
       </View>
     );
   }
 
-  return <Icon color={Colors.text} />;
+  return <Icon color={colors.text.primary} />;
 };
 
 const _layout = () => {
   const { isLoading, session } = useAuth();
+  const { colors } = useTheme();
   const pathname = usePathname();
 
   if (isLoading) {
@@ -58,11 +66,10 @@ const _layout = () => {
     <Tabs
       screenOptions={{
         tabBarShowLabel: false,
-
         tabBarStyle: {
-          backgroundColor: Colors.bg,
+          backgroundColor: colors.background.primary,
           borderTopWidth: 0.5,
-          borderTopColor: Colors.mute,
+          borderTopColor: colors.text.muted,
           paddingTop: 20,
           display: pathname.includes("create") ? "none" : "flex",
         },
@@ -74,7 +81,6 @@ const _layout = () => {
           options={{
             title: "index",
             headerShown: false,
-
             tabBarIcon: ({ focused }) => (
               <CustomTab focused={focused} icon={Home} />
             ),
@@ -98,8 +104,13 @@ const _layout = () => {
             title: "Create",
             headerShown: false,
             tabBarIcon: () => (
-              <View style={styles.createTab}>
-                <PlusIcon color={Colors.textWhite} />
+              <View
+                style={[
+                  styles.createTab,
+                  { backgroundColor: colors.primary.main },
+                ]}
+              >
+                <PlusIcon color={colors.text.white} />
               </View>
             ),
           }}
@@ -147,14 +158,12 @@ export default _layout;
 
 const styles = StyleSheet.create({
   activeTab: {
-    backgroundColor: Colors.activeTabBg,
     padding: 10,
     borderRadius: 10,
   },
   createTab: {
     width: 65,
     height: 65,
-    backgroundColor: Colors.primary,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

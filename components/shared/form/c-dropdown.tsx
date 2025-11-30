@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { ChevronDown, ChevronUp } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -7,6 +7,7 @@ import {
   TextStyle,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import CText from "../c-text";
 
@@ -19,7 +20,10 @@ interface Props {
   data: Item[];
   onSelect: (item: Item) => void;
   placeholder: string;
-  labelStyle?: TextStyle;
+  labelStyle?: TextStyle | TextStyle[];
+  containerStyle?: ViewStyle | ViewStyle[];
+  triggerStyle?: ViewStyle | ViewStyle[];
+  dropdownStyle?: ViewStyle | ViewStyle[];
   label: string;
   value?: string;
   error?: string;
@@ -30,10 +34,14 @@ const CDropDown = ({
   onSelect,
   placeholder,
   labelStyle,
+  containerStyle,
+  triggerStyle,
+  dropdownStyle,
   label,
   value,
   error,
 }: Props) => {
+  const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState<Item | null>(
     data.find((el) => el.value == value) || null
@@ -50,29 +58,53 @@ const CDropDown = ({
   };
 
   return (
-    <View style={{ width: "100%", position: "relative" }}>
-      <CText style={[styles.label, labelStyle]}>{label}</CText>
+    <View style={[containerStyle]}>
+      <CText
+        style={[styles.label, { color: colors.text.secondary }, labelStyle]}
+      >
+        {label}
+      </CText>
 
       <TouchableOpacity
-        style={styles.triggerBox}
+        style={[
+          styles.triggerBox,
+          {
+            borderColor: colors.border.primary,
+            backgroundColor: colors.background.primary,
+          },
+          triggerStyle,
+        ]}
         onPress={() => setVisible((prev) => !prev)}
       >
-        <CText style={selected ? styles.valueText : styles.placeholderText}>
+        <CText
+          style={[
+            selected ? styles.valueText : styles.placeholderText,
+            { color: selected ? colors.text.primary : colors.text.muted },
+          ]}
+        >
           {selected ? selected.label : placeholder}
         </CText>
         {visible ? (
-          <ChevronUp size={18} color={Colors.textSecondary} />
+          <ChevronUp size={18} color={colors.text.secondary} />
         ) : (
-          <ChevronDown size={18} color={Colors.textSecondary} />
+          <ChevronDown size={18} color={colors.text.secondary} />
         )}
       </TouchableOpacity>
 
-      {error && <CText style={styles.error}>{error}</CText>}
+      {error && (
+        <CText style={[styles.error, { color: colors.status.red }]}>
+          {error}
+        </CText>
+      )}
 
       <View
-        style={
-          visible ? styles.dropDownWrapper : styles.dropDownWrapperInActive
-        }
+        style={[
+          visible ? styles.dropDownWrapper : styles.dropDownWrapperInActive,
+          {
+            backgroundColor: colors.background.muted,
+          },
+          dropdownStyle,
+        ]}
       >
         <TouchableOpacity onPress={() => setVisible(false)}>
           <View>
@@ -82,7 +114,14 @@ const CDropDown = ({
               contentContainerStyle={styles.dropDownListContainer}
               renderItem={({ item }) => (
                 <TouchableOpacity onPress={() => handleSelect(item)}>
-                  <CText style={styles.dropDownListText}>{item.label}</CText>
+                  <CText
+                    style={[
+                      styles.dropDownListText,
+                      { color: colors.text.secondary },
+                    ]}
+                  >
+                    {item.label}
+                  </CText>
                 </TouchableOpacity>
               )}
             />
@@ -96,11 +135,13 @@ const CDropDown = ({
 export default CDropDown;
 
 const styles = StyleSheet.create({
-  label: { fontWeight: "semibold", fontSize: 15 },
+  label: {
+    fontWeight: "semibold",
+    fontSize: 15,
+  },
 
   triggerBox: {
     borderWidth: 1,
-    borderColor: Colors.border,
     paddingHorizontal: 15,
     paddingVertical: 15,
     borderRadius: 10,
@@ -110,15 +151,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  placeholderText: {
-    color: Colors.textSecondary,
-  },
-  valueText: {
-    color: Colors.text,
-  },
+  placeholderText: {},
+  valueText: {},
   dropDownWrapper: {
     alignSelf: "flex-start",
-    backgroundColor: Colors.muteBg,
     position: "absolute",
     top: "100%",
     zIndex: 100,
@@ -137,11 +173,9 @@ const styles = StyleSheet.create({
   },
   dropDownListText: {
     fontSize: 14,
-    color: Colors.textSecondary,
     paddingVertical: 10,
   },
   error: {
-    color: Colors.red,
     paddingVertical: 10,
     fontSize: 13,
   },

@@ -1,8 +1,10 @@
+import ThemeSelectorBottomSheet from "@/components/setting/theme-selector-bottom-sheet";
 import CText from "@/components/shared/c-text";
-import { Colors } from "@/constants/colors";
 import { useAuth } from "@/contexts/auth.context";
+import { useTheme } from "@/contexts/theme.context";
 import { supabase } from "@/lib/supabase";
 import { getInitials } from "@/lib/utils";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import {
   ChevronRight,
@@ -12,7 +14,7 @@ import {
   Palette,
   Power,
 } from "lucide-react-native";
-import React from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -29,21 +31,35 @@ interface MenuItemProps {
 }
 
 const MenuItem = ({ title, icon: Icon, onPress }: MenuItemProps) => {
+  const { colors } = useTheme();
+
   return (
-    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.menuItem, { borderColor: colors.border.primary }]}
+      onPress={onPress}
+    >
       <View style={styles.menuLeft}>
-        <View style={styles.menuIconWrapper}>
-          <Icon color={Colors.primary} size={20} />
+        <View
+          style={[
+            styles.menuIconWrapper,
+            { backgroundColor: colors.background.activeTab },
+          ]}
+        >
+          <Icon color={colors.primary.main} size={20} />
         </View>
-        <CText style={styles.menuTitle}>{title}</CText>
+        <CText style={[styles.menuTitle, { color: colors.text.primary }]}>
+          {title}
+        </CText>
       </View>
-      <ChevronRight color={Colors.textSecondary} />
+      <ChevronRight color={colors.text.secondary} />
     </TouchableOpacity>
   );
 };
 
 const SettingsScreen = () => {
+  const { colors } = useTheme();
   const { isLoading, session } = useAuth();
+  const [isOpenTheme, setIsOpenTheme] = useState(false);
 
   if (isLoading) {
     return <ActivityIndicator />;
@@ -68,40 +84,75 @@ const SettingsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <CText style={styles.heading}>Settings</CText>
-
-      <View style={styles.profileBox}>
-        <View style={styles.avatar}>
-          <CText style={styles.avatarText}>
-            {getInitials(userInfo?.display_name)}
-          </CText>
-        </View>
-
-        <View>
-          <CText style={styles.profileName}>{userInfo?.display_name}</CText>
-          <CText style={styles.profileEmail}>{userInfo?.email}</CText>
-        </View>
-      </View>
-
-      {/* Menu List */}
-      <View style={styles.menuList}>
-        <MenuItem icon={Globe} title="Change Language" />
-        <MenuItem icon={Palette} title="Change Theme" />
-        <MenuItem icon={Lock} title="Change Password" />
-      </View>
-
-      {/* Logout Button */}
-      <TouchableOpacity
-        style={styles.logoutBtn}
-        onPress={() => {
-          handleLogout();
-        }}
+    <BottomSheetModalProvider>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: colors.background.primary },
+        ]}
       >
-        <Power size={20} color={Colors.red} />
-        <CText style={styles.logoutText}>Logout</CText>
-      </TouchableOpacity>
-    </SafeAreaView>
+        <CText style={[styles.heading, { color: colors.primary.dark }]}>
+          Settings
+        </CText>
+
+        <ThemeSelectorBottomSheet
+          isOpen={isOpenTheme}
+          onClose={() => setIsOpenTheme(false)}
+        />
+        <View
+          style={[
+            styles.profileBox,
+            {
+              borderColor: colors.border.primary,
+              backgroundColor: colors.background.primary,
+            },
+          ]}
+        >
+          <View
+            style={[styles.avatar, { backgroundColor: colors.primary.main }]}
+          >
+            <CText style={[styles.avatarText, { color: colors.text.white }]}>
+              {getInitials(userInfo?.display_name)}
+            </CText>
+          </View>
+
+          <View>
+            <CText style={[styles.profileName, { color: colors.text.primary }]}>
+              {userInfo?.display_name}
+            </CText>
+            <CText
+              style={[styles.profileEmail, { color: colors.text.secondary }]}
+            >
+              {userInfo?.email}
+            </CText>
+          </View>
+        </View>
+
+        {/* Menu List */}
+        <View style={styles.menuList}>
+          <MenuItem icon={Globe} title="Change Language" />
+          <MenuItem
+            icon={Palette}
+            title="Change Theme"
+            onPress={() => setIsOpenTheme(true)}
+          />
+          <MenuItem icon={Lock} title="Change Password" />
+        </View>
+
+        {/* Logout Button */}
+        <TouchableOpacity
+          style={[styles.logoutBtn, { borderColor: colors.border.primary }]}
+          onPress={() => {
+            handleLogout();
+          }}
+        >
+          <Power size={20} color={colors.status.red} />
+          <CText style={[styles.logoutText, { color: colors.status.red }]}>
+            Logout
+          </CText>
+        </TouchableOpacity>
+      </SafeAreaView>
+    </BottomSheetModalProvider>
   );
 };
 
@@ -117,7 +168,6 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 20,
     fontFamily: "StackSans-Bold",
-    color: Colors.primaryDark,
   },
 
   profileBox: {
@@ -128,7 +178,6 @@ const styles = StyleSheet.create({
     gap: 25,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.border,
     marginTop: 40,
   },
 
@@ -136,13 +185,11 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
   },
 
   avatarText: {
-    color: Colors.textWhite,
     fontSize: 19,
     fontFamily: "StackSans-Bold",
   },
@@ -153,7 +200,6 @@ const styles = StyleSheet.create({
   },
 
   profileEmail: {
-    color: Colors.textSecondary,
     fontSize: 12,
     marginTop: 5,
   },
@@ -169,7 +215,6 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -183,8 +228,7 @@ const styles = StyleSheet.create({
 
   menuIconWrapper: {
     padding: 10,
-    borderRadius: 100,
-    backgroundColor: Colors.activeTabBg,
+    borderRadius: 25,
   },
 
   menuTitle: {
@@ -197,7 +241,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: Colors.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -206,6 +249,5 @@ const styles = StyleSheet.create({
 
   logoutText: {
     fontFamily: "StackSans-SemiBold",
-    color: Colors.red,
   },
 });

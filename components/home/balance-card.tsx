@@ -16,7 +16,7 @@ const QuickLink = (info: { href: string; title: string; icon: LucideIcon }) => {
       }}
       style={styles.quickLink}
     >
-      <info.icon color={Colors.bg} size={20} />
+      <info.icon color={Colors.background.primary} size={20} />
       <CText style={styles.quickLinkText}>{info.title}</CText>
     </TouchableOpacity>
   );
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   balanceCard: {
     borderTopLeftRadius: 10,
     borderTopEndRadius: 10,
-    backgroundColor: Colors.primaryDark,
+    backgroundColor: Colors.primary.dark,
     borderBottomLeftRadius: 5,
     borderBottomEndRadius: 5,
     marginBottom: 40,
@@ -75,24 +75,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 35,
     borderRadius: 10,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.primary.main,
   },
 
   balanceHeader: {
-    color: Colors.textWhite,
+    color: Colors.text.white,
     textAlign: "center",
     fontSize: 13,
   },
 
   balanceText: {
-    color: Colors.white,
+    color: Colors.text.white,
     fontFamily: "StackSans-Bold",
     fontSize: 30,
     textAlign: "center",
     marginVertical: 10,
   },
   errText: {
-    color: Colors.red,
+    color: Colors.status.red,
     fontFamily: "StackSans-Bold",
     fontSize: 20,
     textAlign: "center",
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
 
   skeletonLine: {
-    backgroundColor: Colors.textWhite,
+    backgroundColor: Colors.text.white,
     borderRadius: 4,
   },
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   quickLinkCard: {
     paddingHorizontal: 10,
     paddingVertical: 35,
-    backgroundColor: Colors.primaryDark,
+    backgroundColor: Colors.primary.dark,
     borderBottomLeftRadius: 5,
     borderBottomEndRadius: 5,
     display: "flex",
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
 
   quickLinkText: {
-    color: Colors.textWhite,
+    color: Colors.text.white,
     marginTop: 3,
     fontSize: 12,
   },

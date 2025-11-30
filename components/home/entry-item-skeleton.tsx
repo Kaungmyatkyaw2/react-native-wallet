@@ -1,24 +1,61 @@
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const EntryItemSkeleton = () => {
+  const { colors } = useTheme();
+
   return (
     <TouchableOpacity style={styles.wrapper}>
       <View style={styles.leftPartWrapper}>
-        <View style={[styles.icon, styles.skeleton]} />
+        <View
+          style={[
+            styles.icon,
+            styles.skeleton,
+            { backgroundColor: colors.background.muted },
+          ]}
+        />
         <View style={styles.iconTextWrapper}>
-          <View style={[styles.skeleton, styles.textLine]} />
-          <View style={[styles.skeleton, styles.textLineShort]} />
+          <View
+            style={[
+              styles.skeleton,
+              styles.textLine,
+              { backgroundColor: colors.background.muted },
+            ]}
+          />
+          <View
+            style={[
+              styles.skeleton,
+              styles.textLineShort,
+              { backgroundColor: colors.background.muted },
+            ]}
+          />
         </View>
       </View>
       <View style={styles.amountTextWrapper}>
-        <View style={[styles.skeleton, styles.textLine]} />
-        <View style={[styles.skeleton, styles.textLineShort]} />
+        <View
+          style={[
+            styles.skeleton,
+            styles.textLine,
+            { backgroundColor: colors.background.muted },
+          ]}
+        />
+        <View
+          style={[
+            styles.skeleton,
+            styles.textLineShort,
+            { backgroundColor: colors.background.muted },
+          ]}
+        />
       </View>
 
       {/* Shimmer overlay */}
-      <View style={styles.shimmerOverlay} />
+      <View
+        style={[
+          styles.shimmerOverlay,
+          { backgroundColor: colors.background.muted },
+        ]}
+      />
     </TouchableOpacity>
   );
 };
@@ -63,7 +100,6 @@ const styles = StyleSheet.create({
 
   // Skeleton styles
   skeleton: {
-    backgroundColor: Colors.muteBg,
     borderRadius: 4,
   },
 

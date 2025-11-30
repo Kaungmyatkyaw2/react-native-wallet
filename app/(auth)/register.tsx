@@ -1,7 +1,7 @@
 import CText from "@/components/shared/c-text";
 import CButton from "@/components/shared/form/c-button";
 import CInput from "@/components/shared/form/c-input";
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { supabase } from "@/lib/supabase";
 import { RegisterFormSchema, RegisterFormType } from "@/schema/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 const RegisterScreen = () => {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(RegisterFormSchema),
@@ -64,9 +65,13 @@ const RegisterScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background.primary }]}
+    >
       <View style={styles.formWrapper}>
-        <CText style={styles.headerText}>Create an account!</CText>
+        <CText style={[styles.headerText, { color: colors.text.primary }]}>
+          Create an account!
+        </CText>
 
         <View style={styles.form}>
           <Controller
@@ -135,9 +140,12 @@ const RegisterScreen = () => {
           </CButton>
         </View>
 
-        <CText style={styles.bottomText}>
+        <CText style={[styles.bottomText, { color: colors.text.secondary }]}>
           Already have an account?{" "}
-          <Link href={"/login"} style={styles.registerLink}>
+          <Link
+            href={"/login"}
+            style={[styles.registerLink, { color: colors.primary.main }]}
+          >
             Login Here
           </Link>
         </CText>
@@ -155,7 +163,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     minHeight: "100%",
-    backgroundColor: Colors.bg,
   },
   formWrapper: {
     width: "100%",
@@ -174,7 +181,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
     marginTop: 30,
-    color: Colors.textSecondary,
   },
   registerLink: {
     textDecorationLine: "underline",

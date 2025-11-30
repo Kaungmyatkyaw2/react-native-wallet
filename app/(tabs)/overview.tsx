@@ -1,7 +1,7 @@
 import CategoryList from "@/components/overview/category-list";
 import OverviewPieChart from "@/components/overview/overview-piechart";
 import CText from "@/components/shared/c-text";
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { getMyWallet } from "@/services/supabase.services";
 import { RecordType } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const OverviewScreen = () => {
+  const { colors } = useTheme();
   const [type, setType] = useState<RecordType>("EXPENSE");
 
   const { data: myWallet } = useQuery({
@@ -18,25 +19,48 @@ const OverviewScreen = () => {
   });
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background.primary }]}
+    >
       <SafeAreaView>
         <View style={styles.tabContainer}>
-          <View style={styles.tabBox}>
+          <View
+            style={[
+              styles.tabBox,
+              { backgroundColor: colors.background.muted },
+            ]}
+          >
             <TouchableOpacity
-              style={[styles.tab, type == "INCOME" && styles.activeTab]}
+              style={[
+                styles.tab,
+                type == "INCOME" && [
+                  styles.activeTab,
+                  { backgroundColor: colors.background.primary },
+                ],
+              ]}
               onPress={() => {
                 setType("INCOME");
               }}
             >
-              <CText style={{ textAlign: "center" }}>Income</CText>
+              <CText style={[styles.tabText, { color: colors.text.primary }]}>
+                Income
+              </CText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.tab, type == "EXPENSE" && styles.activeTab]}
+              style={[
+                styles.tab,
+                type == "EXPENSE" && [
+                  styles.activeTab,
+                  { backgroundColor: colors.background.primary },
+                ],
+              ]}
               onPress={() => {
                 setType("EXPENSE");
               }}
             >
-              <CText style={{ textAlign: "center" }}>Expense</CText>
+              <CText style={[styles.tabText, { color: colors.text.primary }]}>
+                Expense
+              </CText>
             </TouchableOpacity>
           </View>
         </View>
@@ -67,7 +91,6 @@ const styles = StyleSheet.create({
     width: "80%",
     padding: 10,
     borderRadius: 5,
-    backgroundColor: Colors.muteBg,
     display: "flex",
     flexDirection: "row",
   },
@@ -78,6 +101,9 @@ const styles = StyleSheet.create({
     display: "flex",
   },
   activeTab: {
-    backgroundColor: Colors.bg,
+    // Background color moved to inline style
+  },
+  tabText: {
+    textAlign: "center",
   },
 });

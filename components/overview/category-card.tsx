@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { getCategoryIcon } from "@/lib/utils";
 import { CategoryStats, getMyWallet } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
 
 const CategoryCard = ({ category }: { category: CategoryStats }) => {
+  const { colors } = useTheme();
   const Icon = getCategoryIcon(category.name);
   const { data: myWallet } = useQuery({
     queryKey: ["my-wallet"],
@@ -16,21 +17,25 @@ const CategoryCard = ({ category }: { category: CategoryStats }) => {
   return (
     <TouchableOpacity style={styles.wrapper}>
       <View style={styles.leftPartWrapper}>
-        <View style={styles.icon}>
-          <Icon color={Colors.text} />
+        <View
+          style={[styles.icon, { backgroundColor: colors.background.muted }]}
+        >
+          <Icon color={colors.text.primary} />
         </View>
         <View style={styles.iconTextWrapper}>
-          <CText style={styles.title}>{category.name}</CText>
-          <CText style={styles.description}>
+          <CText style={[styles.title, { color: colors.text.primary }]}>
+            {category.name}
+          </CText>
+          <CText style={[styles.description, { color: colors.text.muted }]}>
             {category.percentage}% of total
           </CText>
         </View>
       </View>
       <View style={styles.amountTextWrapper}>
-        <CText style={[styles.title]}>
+        <CText style={[styles.title, { color: colors.text.primary }]}>
           {category.total_amount} {myWallet?.currency}
         </CText>
-        <CText style={styles.description}>
+        <CText style={[styles.description, { color: colors.text.muted }]}>
           {category.record_count} records
         </CText>
       </View>
@@ -57,7 +62,6 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    backgroundColor: Colors.muteBg,
     padding: 10,
     borderRadius: 10,
     alignSelf: "flex-start",
@@ -69,7 +73,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 12,
-    color: Colors.mute,
   },
 
   amountTextWrapper: {

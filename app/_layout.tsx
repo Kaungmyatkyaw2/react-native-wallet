@@ -1,8 +1,10 @@
 import { AuthProvider } from "@/contexts/auth.context";
+import { ThemeProvider } from "@/contexts/theme.context";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Toast from "react-native-toast-message";
 
 SplashScreen.preventAutoHideAsync();
@@ -33,15 +35,19 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <GestureHandlerRootView>
+        <ThemeProvider>
+          <AuthProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            </Stack>
 
-        <Toast topOffset={60} />
-      </AuthProvider>
+            <Toast topOffset={60} />
+          </AuthProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
     </QueryClientProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { getLatestRecords } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
@@ -10,6 +10,7 @@ import EntryItem from "./entry-item";
 import EntryItemSkeleton from "./entry-item-skeleton";
 
 const LatestEntriesList = () => {
+  const { colors } = useTheme();
   const { isLoading, data } = useQuery({
     queryKey: ["latest-records"],
     queryFn: () => getLatestRecords(5),
@@ -20,21 +21,28 @@ const LatestEntriesList = () => {
   return (
     <View>
       <View style={styles.headerContainer}>
-        <CText style={styles.headerText}>Latest Entries</CText>
+        <CText style={[styles.headerText, { color: colors.text.primary }]}>
+          Latest Entries
+        </CText>
         <TouchableOpacity
-          style={styles.toHistoryButton}
+          style={[
+            styles.toHistoryButton,
+            { backgroundColor: colors.background.muted },
+          ]}
           onPress={() => {
             router.push("/history");
           }}
         >
-          <ArrowRight />
+          <ArrowRight color={colors.text.primary} />
         </TouchableOpacity>
       </View>
 
       {noData && (
         <View style={styles.noDataContainer}>
-          <BarChart3 color={Colors.textSecondary} size={30} />
-          <CText style={styles.noDataText}>No entries are recorded yet</CText>
+          <BarChart3 color={colors.text.secondary} size={30} />
+          <CText style={[styles.noDataText, { color: colors.text.secondary }]}>
+            No entries are recorded yet
+          </CText>
         </View>
       )}
 
@@ -77,7 +85,6 @@ const styles = StyleSheet.create({
   toHistoryButton: {
     padding: 8,
     borderRadius: 15,
-    backgroundColor: Colors.muteBg,
   },
 
   noDataContainer: {
@@ -88,7 +95,6 @@ const styles = StyleSheet.create({
   noDataText: {
     fontFamily: "StackSans-Regular",
     fontSize: 16,
-    color: Colors.textSecondary,
   },
 
   listContainer: {

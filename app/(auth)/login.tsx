@@ -1,7 +1,7 @@
 import CText from "@/components/shared/c-text";
 import CButton from "@/components/shared/form/c-button";
 import CInput from "@/components/shared/form/c-input";
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { supabase } from "@/lib/supabase";
 import { LoginFormSchema, LoginFormType } from "@/schema/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
 const LoginScreen = () => {
+  const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const { control, handleSubmit } = useForm({
     resolver: zodResolver(LoginFormSchema),
@@ -45,10 +46,15 @@ const LoginScreen = () => {
       setIsLoading(false);
     }
   };
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background.primary }]}
+    >
       <View style={styles.formWrapper}>
-        <CText style={styles.headerText}>Login to your account!</CText>
+        <CText style={[styles.headerText, { color: colors.text.primary }]}>
+          Login to your account!
+        </CText>
 
         <View style={styles.form}>
           <Controller
@@ -87,9 +93,12 @@ const LoginScreen = () => {
           </CButton>
         </View>
 
-        <CText style={styles.bottomText}>
+        <CText style={[styles.bottomText, { color: colors.text.secondary }]}>
           Don't you have an account?{" "}
-          <Link href={"/register"} style={styles.registerLink}>
+          <Link
+            href={"/register"}
+            style={[styles.registerLink, { color: colors.primary.main }]}
+          >
             Register Here
           </Link>
         </CText>
@@ -107,7 +116,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     minHeight: "100%",
-    backgroundColor: Colors.bg,
   },
   formWrapper: {
     width: "100%",
@@ -126,7 +134,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: "center",
     marginTop: 30,
-    color: Colors.textSecondary,
   },
   registerLink: {
     textDecorationLine: "underline",

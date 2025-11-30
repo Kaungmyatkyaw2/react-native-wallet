@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { formatDate, getCategoryIcon } from "@/lib/utils";
 import { getMyWallet } from "@/services/supabase.services";
 import { IRecord } from "@/types/interfaces";
@@ -8,6 +8,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import CText from "../shared/c-text";
 
 const EntryItem = ({ item }: { item: IRecord }) => {
+  const { colors } = useTheme();
   const Icon = getCategoryIcon(item?.category?.name!);
   const { data: myWallet } = useQuery({
     queryKey: ["my-wallet"],
@@ -17,12 +18,16 @@ const EntryItem = ({ item }: { item: IRecord }) => {
   return (
     <TouchableOpacity style={styles.wrapper}>
       <View style={styles.leftPartWrapper}>
-        <View style={styles.icon}>
-          <Icon color={Colors.text} />
+        <View
+          style={[styles.icon, { backgroundColor: colors.background.muted }]}
+        >
+          <Icon color={colors.text.primary} />
         </View>
         <View style={styles.iconTextWrapper}>
-          <CText style={styles.title}>{item.title}</CText>
-          <CText style={styles.description}>
+          <CText style={[styles.title, { color: colors.text.primary }]}>
+            {item.title}
+          </CText>
+          <CText style={[styles.description, { color: colors.text.muted }]}>
             {formatDate(new Date(item.created_at))}
           </CText>
         </View>
@@ -31,13 +36,20 @@ const EntryItem = ({ item }: { item: IRecord }) => {
         <CText
           style={[
             styles.title,
-            { color: item.type == "EXPENSE" ? Colors.red : Colors.green },
+            {
+              color:
+                item.type == "EXPENSE"
+                  ? colors.status.red
+                  : colors.status.green,
+            },
           ]}
         >
           {item.type == "EXPENSE" ? "- " : "+ "}
           {item.amount} {myWallet?.currency}
         </CText>
-        <CText style={styles.description}>{item.payment_method?.name}</CText>
+        <CText style={[styles.description, { color: colors.text.muted }]}>
+          {item.payment_method?.name}
+        </CText>
       </View>
     </TouchableOpacity>
   );
@@ -62,7 +74,6 @@ const styles = StyleSheet.create({
   },
 
   icon: {
-    backgroundColor: Colors.muteBg,
     padding: 10,
     borderRadius: 10,
     alignSelf: "flex-start",
@@ -74,7 +85,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 12,
-    color: Colors.mute,
   },
 
   amountTextWrapper: {

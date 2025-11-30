@@ -1,8 +1,8 @@
 import CButton from "@/components/shared/form/c-button";
 import CDropDown from "@/components/shared/form/c-dropdown";
 import CInput from "@/components/shared/form/c-input";
-import { Colors } from "@/constants/colors";
 import { RecordTypes } from "@/constants/record-types";
+import { useTheme } from "@/contexts/theme.context";
 import { CreateRecordSchema, CreateRecordType } from "@/schema/record.schema";
 import {
   createRecord,
@@ -20,6 +20,7 @@ import Toast from "react-native-toast-message";
 
 const CreateRecordForm = () => {
   const { type } = useLocalSearchParams();
+  const { colors } = useTheme();
 
   const {
     reset: formReset,
@@ -103,9 +104,11 @@ const CreateRecordForm = () => {
     <View
       style={{
         paddingHorizontal: 20,
-        marginTop: 35,
+        paddingTop: 35,
         flexDirection: "column",
         gap: 30,
+        backgroundColor: colors.background.primary,
+        minHeight: "100%",
       }}
     >
       {!type && (
@@ -120,7 +123,7 @@ const CreateRecordForm = () => {
                 error={fieldState.error?.message}
                 label="Type"
                 placeholder="Select the type of record"
-                labelStyle={styles.label}
+                labelStyle={[styles.label, { color: colors.text.secondary }]}
                 value={field.value}
                 onSelect={(item) => {
                   field.onChange(item.value);
@@ -139,7 +142,7 @@ const CreateRecordForm = () => {
           <CInput
             label={`${selectedType == "INCOME" ? "Income" : "Expense"} Title`}
             placeholder="Title of your record"
-            labelStyle={styles.label}
+            labelStyle={[styles.label, { color: colors.text.secondary }]}
             onBlur={field.onBlur}
             onChangeText={field.onChange}
             error={fieldState.error?.message}
@@ -157,7 +160,7 @@ const CreateRecordForm = () => {
             label="Amount"
             placeholder="Amount of the record"
             keyboardType="number-pad"
-            labelStyle={styles.label}
+            labelStyle={[styles.label, { color: colors.text.secondary }]}
             onBlur={field.onBlur}
             onChangeText={(value) => {
               if (value === "") {
@@ -184,7 +187,7 @@ const CreateRecordForm = () => {
             error={fieldState.error?.message}
             label="Payment Method"
             placeholder="Select the payment of record"
-            labelStyle={styles.label}
+            labelStyle={[styles.label, { color: colors.text.secondary }]}
             value={field.value}
             onSelect={(item) => {
               field.onChange(item.value);
@@ -204,7 +207,7 @@ const CreateRecordForm = () => {
               error={fieldState.error?.message}
               label="Category"
               placeholder="Select the category of record"
-              labelStyle={styles.label}
+              labelStyle={[styles.label, { color: colors.text.secondary }]}
               value={field.value}
               onSelect={(item) => {
                 field.onChange(item.value);
@@ -212,25 +215,10 @@ const CreateRecordForm = () => {
             />
           )}
         />
-        // <Controller
-        //   control={control}
-        //   rules={{ required: true }}
-        //   name="category_id"
-        //   render={({ field, fieldState }) => (
-        //     <SelectCategoryList
-        //       error={fieldState.error?.message}
-        //       value={field.value}
-        //       onSelect={(item) => {
-        //         field.onChange(item.value);
-        //       }}
-        //       data={formattedCategories || []}
-        //     />
-        //   )}
-        // />
       )}
 
       <CButton
-        style={styles.button}
+        style={[styles.button, { shadowColor: colors.primary.main }]}
         onPress={handleSubmit(onSubmit)}
         isLoading={loading}
       >
@@ -245,12 +233,10 @@ export default CreateRecordForm;
 const styles = StyleSheet.create({
   label: {
     fontFamily: "StackSans-SemiBold",
-    color: Colors.textSecondary,
     fontSize: 16,
   },
   button: {
     marginTop: 20,
-    shadowColor: Colors.primary,
     shadowOffset: {
       width: 6,
       height: 6,
@@ -263,7 +249,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 15,
-
-    backgroundColor: Colors.white,
   },
 });

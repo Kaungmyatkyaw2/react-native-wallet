@@ -1,5 +1,5 @@
 import CText from "@/components/shared/c-text";
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { getCategoryExpensesForPieChart } from "@/services/supabase.services";
 import { RecordType, Wallet } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
@@ -7,14 +7,26 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { PieChart as RNPieChart } from "react-native-gifted-charts";
 
-const ChartSkeleton = () => (
+const ChartSkeleton = ({ colors }: { colors: any }) => (
   <View style={styles.skeletonContainer}>
-    <View style={styles.skeletonChart} />
+    <View
+      style={[styles.skeletonChart, { backgroundColor: colors.border.primary }]}
+    />
     <View style={styles.skeletonLabels}>
       {[1, 2, 3, 4].map((item) => (
         <View key={item} style={styles.skeletonLabelItem}>
-          <View style={styles.skeletonColorBox} />
-          <View style={styles.skeletonText} />
+          <View
+            style={[
+              styles.skeletonColorBox,
+              { backgroundColor: colors.border.primary },
+            ]}
+          />
+          <View
+            style={[
+              styles.skeletonText,
+              { backgroundColor: colors.border.primary },
+            ]}
+          />
         </View>
       ))}
     </View>
@@ -28,6 +40,7 @@ const OverviewPieChart = ({
   type: RecordType;
   wallet: Wallet;
 }) => {
+  const { colors } = useTheme();
   const { isLoading, data } = useQuery({
     queryKey: ["overview-stats", type],
     queryFn: () => getCategoryExpensesForPieChart(type),
@@ -42,20 +55,38 @@ const OverviewPieChart = ({
     })) || [];
 
   if (isLoading) {
-    return <ChartSkeleton />;
+    return <ChartSkeleton colors={colors} />;
   }
 
   if (!data?.data.length) {
     return (
-      <View style={styles.noDataBox}>
-        <View style={styles.noDataIcon} />
-        <CText style={styles.noDataTitle}>No Data Found</CText>
-        <CText style={styles.noDataSubtitle}>
+      <View
+        style={[
+          styles.noDataBox,
+          {
+            borderColor: colors.border.primary,
+            backgroundColor: colors.background.primary,
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.noDataIcon,
+            { backgroundColor: colors.border.primary },
+          ]}
+        />
+        <CText style={[styles.noDataTitle, { color: colors.text.primary }]}>
+          No Data Found
+        </CText>
+        <CText
+          style={[styles.noDataSubtitle, { color: colors.text.secondary }]}
+        >
           There are no records available for this category yet.
         </CText>
       </View>
     );
   }
+
   return (
     <>
       <View style={styles.chartContainer}>
@@ -66,12 +97,12 @@ const OverviewPieChart = ({
           data={pieData!}
           donut
           sectionAutoFocus
-          innerCircleColor={Colors.bg}
+          innerCircleColor={colors.background.primary}
         />
         <CText
           style={{
             textAlign: "center",
-            color: Colors.textSecondary,
+            color: colors.text.secondary,
             marginVertical: 25,
           }}
         >
@@ -98,7 +129,9 @@ const OverviewPieChart = ({
                   borderRadius: 5,
                 }}
               />
-              <CText style={{ fontSize: 10 }}>{el.name}</CText>
+              <CText style={[{ fontSize: 10 }, { color: colors.text.primary }]}>
+                {el.name}
+              </CText>
             </View>
           ))}
         </View>
@@ -134,7 +167,6 @@ const styles = StyleSheet.create({
     width: 240,
     height: 240,
     borderRadius: 120,
-    backgroundColor: Colors.border,
   },
   skeletonLabels: {
     marginTop: 20,
@@ -152,12 +184,10 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 4,
-    backgroundColor: Colors.border,
   },
   skeletonText: {
     width: 60,
     height: 12,
-    backgroundColor: Colors.border,
     borderRadius: 4,
   },
   // No Data UI
@@ -167,8 +197,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.bg,
     marginTop: 40,
     alignItems: "center",
     justifyContent: "center",
@@ -179,7 +207,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.border,
     opacity: 0.6,
     marginBottom: 5,
   },
@@ -187,13 +214,11 @@ const styles = StyleSheet.create({
   noDataTitle: {
     fontSize: 16,
     fontFamily: "StackSans-SemiBold",
-    color: Colors.text,
     marginTop: 8,
   },
 
   noDataSubtitle: {
     fontSize: 12,
-    color: Colors.textSecondary,
     textAlign: "center",
     width: "80%",
     marginTop: 4,

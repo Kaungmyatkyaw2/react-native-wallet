@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { getCategoriesWithStats } from "@/services/supabase.services";
 import { RecordType } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import CText from "../shared/c-text";
 import CategoryCard from "./category-card";
 
 const CategoryList = ({ type }: { type: RecordType }) => {
+  const { colors } = useTheme();
   const { isLoading, data } = useQuery({
     queryKey: ["category-stats", type],
     queryFn: () => getCategoriesWithStats(type),
@@ -16,7 +17,7 @@ const CategoryList = ({ type }: { type: RecordType }) => {
 
   return (
     <View style={styles.container}>
-      <CText style={styles.title}>
+      <CText style={[styles.title, { color: colors.primary.dark }]}>
         Categories For {type == "EXPENSE" ? "Expense" : "Income"}
       </CText>
       {isLoading ? (
@@ -44,6 +45,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: "StackSans-Bold",
     fontSize: 15,
-    color: Colors.primaryDark,
   },
 });

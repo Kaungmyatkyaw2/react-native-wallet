@@ -1,6 +1,6 @@
 import CreateRecordForm from "@/components/create-record/create-record-form";
 import CText from "@/components/shared/c-text";
-import { Colors } from "@/constants/colors";
+import { useTheme } from "@/contexts/theme.context";
 import { router, useLocalSearchParams } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import React from "react";
@@ -8,17 +8,23 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const CreateScreen = () => {
   const { type } = useLocalSearchParams();
+  const { colors } = useTheme();
 
   return (
     <View>
-      <View style={styles.headerWrapper}>
+      <View
+        style={[
+          styles.headerWrapper,
+          { backgroundColor: colors.background.primary },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => router.push("/")}
-          style={styles.backButton}
+          style={[styles.backButton, { borderColor: colors.border.primary }]}
         >
-          <ChevronLeft />
+          <ChevronLeft color={colors.text.primary} />
         </TouchableOpacity>
-        <CText style={styles.headerTitleText}>
+        <CText style={[styles.headerTitleText, { color: colors.text.primary }]}>
           Add {(type as string)?.toLocaleLowerCase() || "Record"}
         </CText>
       </View>
@@ -33,7 +39,6 @@ export default CreateScreen;
 const styles = StyleSheet.create({
   headerWrapper: {
     width: "100%",
-    backgroundColor: Colors.bg,
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 30,
@@ -53,7 +58,6 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 50,
     borderWidth: 1,
-    borderColor: Colors.border,
     alignSelf: "flex-start",
     position: "absolute",
     left: 20,
