@@ -87,6 +87,8 @@ const CreateRecordForm = () => {
       queryClient.invalidateQueries({ queryKey: ["my-wallet"] });
       queryClient.invalidateQueries({ queryKey: ["my-records"] });
       queryClient.invalidateQueries({ queryKey: ["latest-records"] });
+      queryClient.invalidateQueries({ queryKey: ["category-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["overview-stats"] });
       formReset();
       router.back();
     } catch (error) {

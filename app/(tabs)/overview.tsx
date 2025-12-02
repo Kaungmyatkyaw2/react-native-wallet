@@ -33,22 +33,6 @@ const OverviewScreen = () => {
             <TouchableOpacity
               style={[
                 styles.tab,
-                type == "INCOME" && [
-                  styles.activeTab,
-                  { backgroundColor: colors.background.primary },
-                ],
-              ]}
-              onPress={() => {
-                setType("INCOME");
-              }}
-            >
-              <CText style={[styles.tabText, { color: colors.text.primary }]}>
-                Income
-              </CText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tab,
                 type == "EXPENSE" && [
                   styles.activeTab,
                   { backgroundColor: colors.background.primary },
@@ -60,6 +44,22 @@ const OverviewScreen = () => {
             >
               <CText style={[styles.tabText, { color: colors.text.primary }]}>
                 Expense
+              </CText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tab,
+                type == "INCOME" && [
+                  styles.activeTab,
+                  { backgroundColor: colors.background.primary },
+                ],
+              ]}
+              onPress={() => {
+                setType("INCOME");
+              }}
+            >
+              <CText style={[styles.tabText, { color: colors.text.primary }]}>
+                Income
               </CText>
             </TouchableOpacity>
           </View>

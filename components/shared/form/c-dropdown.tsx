@@ -27,6 +27,7 @@ interface Props {
   label: string;
   value?: string;
   error?: string;
+  maxHeight?: number; // Optional: custom max height
 }
 
 const CDropDown = ({
@@ -40,6 +41,7 @@ const CDropDown = ({
   label,
   value,
   error,
+  maxHeight = 250,
 }: Props) => {
   const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
@@ -55,6 +57,12 @@ const CDropDown = ({
     setSelected(item);
     onSelect(item);
     setVisible(false);
+  };
+
+  const calculateDropdownHeight = () => {
+    const itemHeight = 50; // Approximate height per item
+    const calculatedHeight = Math.min(data.length * itemHeight, maxHeight);
+    return calculatedHeight;
   };
 
   return (
@@ -75,6 +83,7 @@ const CDropDown = ({
           triggerStyle,
         ]}
         onPress={() => setVisible((prev) => !prev)}
+        activeOpacity={0.8}
       >
         <CText
           style={[
@@ -97,37 +106,51 @@ const CDropDown = ({
         </CText>
       )}
 
-      <View
-        style={[
-          visible ? styles.dropDownWrapper : styles.dropDownWrapperInActive,
-          {
-            backgroundColor: colors.background.muted,
-          },
-          dropdownStyle,
-        ]}
-      >
-        <TouchableOpacity onPress={() => setVisible(false)}>
-          <View>
-            <FlatList
-              data={data}
-              keyExtractor={(item) => item.value}
-              contentContainerStyle={styles.dropDownListContainer}
-              renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleSelect(item)}>
-                  <CText
-                    style={[
-                      styles.dropDownListText,
-                      { color: colors.text.secondary },
-                    ]}
-                  >
-                    {item.label}
-                  </CText>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
+      {visible && (
+        <View
+          style={[
+            styles.dropDownWrapper,
+            {
+              backgroundColor: colors.background.muted,
+              borderColor: colors.border.primary,
+              maxHeight: calculateDropdownHeight(),
+              height: calculateDropdownHeight(),
+            },
+            dropdownStyle,
+          ]}
+        >
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item.value}
+            contentContainerStyle={styles.dropDownListContainer}
+            showsVerticalScrollIndicator={true}
+            scrollEnabled={data.length > 0}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => handleSelect(item)}
+                style={[styles.dropDownItem]}
+              >
+                <CText
+                  style={[
+                    styles.dropDownListText,
+                    {
+                      color:
+                        item.value === selected?.value
+                          ? colors.text.primary
+                          : colors.text.secondary,
+                    },
+                  ]}
+                >
+                  {item.label}
+                </CText>
+              </TouchableOpacity>
+            )}
+            initialNumToRender={10}
+            maxToRenderPerBatch={20}
+            windowSize={5}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -139,7 +162,6 @@ const styles = StyleSheet.create({
     fontWeight: "semibold",
     fontSize: 15,
   },
-
   triggerBox: {
     borderWidth: 1,
     paddingHorizontal: 15,
@@ -150,30 +172,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    minHeight: 50,
   },
-  placeholderText: {},
-  valueText: {},
+  placeholderText: {
+    opacity: 0.7,
+  },
+  valueText: {
+    fontWeight: "500",
+  },
   dropDownWrapper: {
-    alignSelf: "flex-start",
     position: "absolute",
     top: "100%",
-    zIndex: 100,
+    zIndex: 1000,
     left: 0,
-    width: "100%",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    right: 0,
+    borderWidth: 1,
     borderRadius: 10,
-  },
-  dropDownWrapperInActive: {
-    display: "none",
+    marginTop: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    overflow: "hidden",
   },
   dropDownListContainer: {
-    display: "flex",
-    flexDirection: "column",
+    flexGrow: 1,
+  },
+  dropDownItem: {
+    paddingHorizontal: 15,
+    paddingVertical: 12,
   },
   dropDownListText: {
-    fontSize: 14,
-    paddingVertical: 10,
+    fontSize: 15,
   },
   error: {
     paddingVertical: 10,

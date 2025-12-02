@@ -287,48 +287,68 @@ export const getCategoriesWithStats = async (
   data: CategoryStats[];
 }> => {
   try {
-    let query = supabase
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const startOfMonthISO = startOfMonth.toISOString();
+    const endOfMonthISO = endOfMonth.toISOString();
+
+    // First, fetch all categories
+    let categoriesQuery = supabase
       .from("categories")
-      .select(
-        `
-        id,
-        name,
-        color,
-        records(
-          amount,
-          type
-        )
-      `
-      )
+      .select("id, name, color")
       .eq("isDefault", true);
 
     if (type) {
-      query = query.eq("type", type);
+      categoriesQuery = categoriesQuery.eq("type", type);
     }
 
-    const { data, error } = await query;
+    const { data: categories, error: categoriesError } = await categoriesQuery;
 
-    if (error) {
-      throw error;
+    if (categoriesError) {
+      throw categoriesError;
     }
 
-    if (!data) {
+    if (!categories || categories.length === 0) {
       return {
         data: [],
       };
     }
 
-    const categoriesWithStats: CategoryStats[] = data.map((category) => {
-      // Filter records by type if type was provided
-      const records = type
-        ? category.records?.filter((record) => record.type === type) || []
-        : category.records || [];
+    const categoriesWithStatsPromises = categories.map(async (category) => {
+      let recordsQuery = supabase
+        .from("records")
+        .select("amount, type, created_at")
+        .eq("category_id", category.id)
+        .gte("created_at", startOfMonthISO)
+        .lte("created_at", endOfMonthISO);
 
-      const record_count = records.length;
+      if (type) {
+        recordsQuery = recordsQuery.eq("type", type);
+      }
 
-      const total_amount = records.reduce((sum, record) => {
-        return sum + (record.amount || 0);
-      }, 0);
+      const { data: records, error: recordsError } = await recordsQuery;
+
+      if (recordsError) {
+        console.error(
+          `Error fetching records for category ${category.id}:`,
+          recordsError
+        );
+        return {
+          id: category.id,
+          name: category.name,
+          color: category.color,
+          record_count: 0,
+          total_amount: 0,
+        };
+      }
+
+      const record_count = records?.length || 0;
+      const total_amount =
+        records?.reduce((sum, record) => {
+          return sum + (record.amount || 0);
+        }, 0) || 0;
 
       return {
         id: category.id,
@@ -339,15 +359,12 @@ export const getCategoriesWithStats = async (
       };
     });
 
-    // Calculate totals (only from categories that have records)
-    const categoriesWithRecords = categoriesWithStats.filter(
-      (category) => category.record_count > 0
-    );
-    const totalAmount = categoriesWithRecords.reduce((sum, category) => {
+    const categoriesWithStats = await Promise.all(categoriesWithStatsPromises);
+
+    const totalAmount = categoriesWithStats.reduce((sum, category) => {
       return sum + category.total_amount;
     }, 0);
 
-    // Calculate percentages
     const categoriesWithPercentage = categoriesWithStats.map((category) => ({
       ...category,
       percentage:

@@ -1,5 +1,5 @@
 import { useTheme } from "@/contexts/theme.context";
-import { getCategoryIcon } from "@/lib/utils";
+import { getCategoryIcon } from "@/lib/icons";
 import { CategoryStats, getMyWallet } from "@/services/supabase.services";
 import { useQuery } from "@tanstack/react-query";
 import React from "react";

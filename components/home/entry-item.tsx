@@ -1,5 +1,6 @@
 import { useTheme } from "@/contexts/theme.context";
-import { formatDate, getCategoryIcon } from "@/lib/utils";
+import { getCategoryIcon } from "@/lib/icons";
+import { formatDate } from "@/lib/utils";
 import { getMyWallet } from "@/services/supabase.services";
 import { IRecord } from "@/types/interfaces";
 import { useQuery } from "@tanstack/react-query";

@@ -8,7 +8,6 @@ import {
   PieChart,
   PlusIcon,
   Settings,
-  Target,
 } from "lucide-react-native";
 import React from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -86,14 +85,13 @@ const _layout = () => {
             ),
           }}
         />
-
         <Tabs.Screen
-          name="saving"
+          name="overview"
           options={{
-            title: "Saving",
+            title: "Overview",
             headerShown: false,
             tabBarIcon: ({ focused }) => (
-              <CustomTab focused={focused} icon={Target} />
+              <CustomTab focused={focused} icon={PieChart} />
             ),
           }}
         />
@@ -117,17 +115,6 @@ const _layout = () => {
         />
 
         <Tabs.Screen
-          name="overview"
-          options={{
-            title: "Overview",
-            headerShown: false,
-            tabBarIcon: ({ focused }) => (
-              <CustomTab focused={focused} icon={PieChart} />
-            ),
-          }}
-        />
-
-        <Tabs.Screen
           name="history"
           options={{
             title: "History",
@@ -135,7 +122,6 @@ const _layout = () => {
             tabBarIcon: ({ focused }) => (
               <CustomTab focused={focused} icon={History} />
             ),
-            href: null,
           }}
         />
 
