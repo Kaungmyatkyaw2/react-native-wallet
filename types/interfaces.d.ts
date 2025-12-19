@@ -55,4 +55,5 @@ interface PaginationParams {
   page?: number;
   sort_by?: string;
   sort_dir?: string;
+  q?: string;
 }

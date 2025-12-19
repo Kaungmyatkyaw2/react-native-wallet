@@ -60,7 +60,7 @@ const CDropDown = ({
   };
 
   const calculateDropdownHeight = () => {
-    const itemHeight = 50; // Approximate height per item
+    const itemHeight = 50;
     const calculatedHeight = Math.min(data.length * itemHeight, maxHeight);
     return calculatedHeight;
   };

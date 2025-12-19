@@ -46,7 +46,7 @@ export const Themes = {
       light: "#80b8ff",
     },
     background: {
-      primary: "#121212",
+      primary: "#000000ff",
       muted: "#2d2d2d",
       activeTab: "#4d9dff3a",
     },

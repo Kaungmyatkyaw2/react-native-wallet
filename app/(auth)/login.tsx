@@ -24,7 +24,7 @@ const LoginScreen = () => {
       setIsLoading(true);
       const { email, password } = formData;
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -84,6 +84,7 @@ const LoginScreen = () => {
                 onChangeText={field.onChange}
                 error={fieldState.error?.message}
                 value={field.value}
+                isPassword
               />
             )}
           />

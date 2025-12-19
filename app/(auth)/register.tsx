@@ -116,6 +116,7 @@ const RegisterScreen = () => {
                 onChangeText={field.onChange}
                 error={fieldState.error?.message}
                 value={field.value}
+                isPassword
               />
             )}
           />
@@ -131,6 +132,7 @@ const RegisterScreen = () => {
                 onChangeText={field.onChange}
                 error={fieldState.error?.message}
                 value={field.value}
+                isPassword
               />
             )}
           />

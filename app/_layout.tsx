@@ -21,7 +21,6 @@ export default function RootLayout() {
     "StackSans-SemiBold": require("../assets/fonts/StackSansText-SemiBold.ttf"),
   });
 
-  // Use useAuth instead of useSession
 
   useEffect(() => {
     if (loaded || error) {

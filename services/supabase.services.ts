@@ -160,13 +160,14 @@ export const getRecords = async ({
   page = 1,
   sort_by = "created_at",
   sort_dir = "desc",
+  q = "",
 }: PaginationParams) => {
   const wallet = await getMyWallet();
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const recordsResponse = await supabase
+  let sQuery = supabase
     .from("records")
     .select(
       `
@@ -184,6 +185,11 @@ export const getRecords = async ({
     .eq("wallet_id", wallet.id)
     .range(from, to)
     .order(sort_by, { ascending: sort_dir == "asc" });
+
+  if (!!q.trim()) {
+    sQuery = sQuery.ilike("title", `%${q.trim()}%`);
+  }
+  const recordsResponse = await sQuery;
 
   if (recordsResponse.error) {
     throw new Error(recordsResponse.error.message);
@@ -380,4 +386,32 @@ export const getCategoriesWithStats = async (
     console.error("Error fetching categories with stats:", error);
     throw error;
   }
+};
+
+export const changePassword = async ({
+  oldPassword,
+  newPassword,
+}: {
+  oldPassword: string;
+  newPassword: string;
+}) => {
+  const { data: signInData, error: signInError } =
+    await supabase.auth.signInWithPassword({
+      email: (await supabase.auth.getUser()).data.user?.email || "",
+      password: oldPassword,
+    });
+
+  if (signInError) {
+    throw new Error("Current password is incorrect");
+  }
+
+  const { error: updateError } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (updateError) {
+    throw new Error(updateError.message || "Failed to update password");
+  }
+
+  return { success: true };
 };

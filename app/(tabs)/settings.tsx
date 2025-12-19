@@ -8,7 +8,6 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import {
   ChevronRight,
-  Globe,
   Lock,
   LucideIcon,
   Palette,
@@ -130,13 +129,17 @@ const SettingsScreen = () => {
 
         {/* Menu List */}
         <View style={styles.menuList}>
-          <MenuItem icon={Globe} title="Change Language" />
+          {/* <MenuItem icon={Globe} title="Change Language" /> */}
           <MenuItem
             icon={Palette}
             title="Change Theme"
             onPress={() => setIsOpenTheme(true)}
           />
-          <MenuItem icon={Lock} title="Change Password" />
+          <MenuItem
+            icon={Lock}
+            title="Change Password"
+            onPress={() => router.push("/change-password")}
+          />
         </View>
 
         {/* Logout Button */}

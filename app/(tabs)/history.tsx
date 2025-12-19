@@ -6,17 +6,19 @@ import { useTheme } from "@/contexts/theme.context";
 import { getRecords } from "@/services/supabase.services";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { BarChart3 } from "lucide-react-native";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HistoryScreen = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const { colors } = useTheme();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["my-records"],
+      queryKey: ["my-records", searchTerm],
       initialPageParam: 1,
-      queryFn: ({ pageParam }) => getRecords({ page: pageParam, limit: 10 }),
+      queryFn: ({ pageParam }) =>
+        getRecords({ page: pageParam, limit: 10, q: searchTerm }),
       getNextPageParam: (lastPage) => {
         if (lastPage.data.length < 10) {
           return undefined;
@@ -47,7 +49,9 @@ const HistoryScreen = () => {
       </CText>
       <CInput
         placeholder="Search by the title"
-        inputStyle={{ marginTop: 20, marginHorizontal: 20 }}
+        inputStyle={{ marginTop: 20 }}
+        containerStyle={{ paddingHorizontal: 20 }}
+        onChangeText={(e) => setSearchTerm(e)}
       />
       {noData && (
         <View style={styles.noDataContainer}>
